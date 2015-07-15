@@ -2,7 +2,7 @@
 JPortfolio, CV, projects, photos, and bio as a Jekyll site.
 
 # To install:
-* Install rubygems: >sudo apt-get install rubygems
+* Install rubygems: <code>sudo apt-get install rubygems</code>
 * Install bundler: >gem install bundler
 * Install dependencies: >bundle install
 

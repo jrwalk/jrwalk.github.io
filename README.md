@@ -8,5 +8,5 @@ JPortfolio, CV, projects, photos, and bio as a Jekyll site.
 
 # To run a local server:
 Run <code>bundle exec jekyll server</code>. To have this auto-update as you 
-make changes, <code>bundle exec jekyll server --watch</code>code>, which 
+make changes, <code>bundle exec jekyll server --watch</code>, which 
 displays on localhost:4000.

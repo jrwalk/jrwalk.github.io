@@ -3,6 +3,17 @@ permalink: pretty
 highlighter: pygments
 markdown: kramdown
 exclude: ['Gemfile', 'CNAME', 'README.markdown']
+github: {
+    "hostname": "github.com",
+    "pages_hostname": "github.io",
+    "api_url": "https://api.github.com",
+    "environment": "dotcom",
+    "owner_name": "John Walk",
+    "owner_url": "https://github.com/jrwalk",
+    "language": null,
+    "is_user_page": true,
+    "is_project_page": false,
+}
 
 defaults:
   -

@@ -12,6 +12,6 @@ The brute force approach is to run in a larger machine with stronger magnetic fi
 <p>Under the right conditions (shaping, heating power) the plasma transitions to "high-confinement" or H-mode (compared to the default "low-confinement" L-mode).
 The plasma forms a transport barrier, the <strong>pedestal</strong>, in the edge, where sheared flows cut off turbulent transport - density and temperature profiles "pile up" behind this barrier, leading to much higher core pressure and fusion power density.</p>
 
-![pedestal](/images/pedestal/prof_L_H.jpg){: .inline-img}
+![pedestal](/images/fusionprimer/prof_L_H.jpg){: .inline-img}
 
 Up next: [H-Mode](/pages/fusionprimer/hmode)

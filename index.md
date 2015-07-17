@@ -7,7 +7,7 @@ title: John Walk
 
 <p>I'm interested in clean energy technology, open-source code development, 
 data science, exploring the frontiers of plasma physics, aerospace, and 
-computer building.  I'm currently a researcher in nuclear fusion energy at 
+computer building.  I'm currently a researcher in <a href="/pages/fusionprimer">nuclear fusion energy</a> at 
 MIT's Alcator C-Mod tokamak experiment, where I have worked in varying 
 capacities since my sophomore year, completing my doctorate in September 2014.  
 I'm always interested in new challenges!</p>
@@ -23,7 +23,8 @@ of the best parts of working at MIT!</p>
 [more projects...](/pages/projects)
 
 ##Current Research Topics
-* Experimental work generating high-resolution measurements of the *pedestal* 
+* Experimental work generating high-resolution measurements of the 
+[pedestal](/pages/fusionprimer/pedestal)
 in high-performance plasmas for fusion power plants
 * Computational modeling of the large-scale stability and turbulence in the 
 plasma edge

@@ -4,4 +4,4 @@ layout: default
 ---
 
 # Fusion Primer
-  - [The Pedestal](/_site/pedestal.md)
+  - [The Pedestal](/pages/fusionprimer/pedestal/index.html)

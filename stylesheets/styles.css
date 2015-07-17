@@ -97,10 +97,13 @@ th {
 
 img {
   max-width:100%;
-  border: 1px solid #333;
 }
 img.inline-img {
   max-width: 100%;
+}
+img.wrap-img {
+  max-width: 50%;
+  float: right;
 }
 
 header {

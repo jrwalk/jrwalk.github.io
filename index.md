@@ -1,7 +1,6 @@
 ---
 layout: default
 title: John Walk
-subtitle: MIT PSFC
 ---
 
 <p>Engineer, scientist, developer, tinkerer, adventurer.</p>

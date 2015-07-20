@@ -105,6 +105,10 @@ img.wrap-img {
   max-width: 50%;
   float: right;
 }
+img.leftwrap-img {
+  max-width: 50%;
+  float: left;
+}
 
 header {
   width:270px;

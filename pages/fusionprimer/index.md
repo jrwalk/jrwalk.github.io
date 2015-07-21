@@ -7,3 +7,4 @@ layout: default
 # Fusion Primer
   - [The Pedestal](/pages/fusionprimer/pedestal)
   - [H-Mode](/pages/fusionprimer/hmode)
+  - [I-Mode](/pages/fusionprimer/imode)

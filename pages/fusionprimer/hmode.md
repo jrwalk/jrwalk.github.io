@@ -18,3 +18,5 @@ This is sufficient to prevent impurity accumulation.</p>
 
 <p>So what we need, then, is high energy confinement, low particle confinement, and to avoid (or mitigate or suppress) large ELMs.
 Fortunately, a number of solutions exist: engineering fixes (external controls that suppress or smooth out the ELM cycle), and physics solutions in the form of steady H-modes without ELMs, where the pedestal is regulated by some benign fluctuation below the ELM limit.  A number of these regimes exist, but each has its pros and cons - high-performance operation without ELMs, then, is a major research focus.</p>
+
+Up next: [I-mode](/pages/fusionprimer/imode)

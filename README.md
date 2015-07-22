@@ -1,5 +1,5 @@
 # jrwalk.github.io
-JPortfolio, CV, projects, photos, and bio as a Jekyll site.
+Portfolio, CV, projects, photos, and bio as a Jekyll site.
 
 ## To install:
 * Install rubygems: <code>sudo apt-get install rubygems</code>

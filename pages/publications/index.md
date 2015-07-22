@@ -17,7 +17,7 @@ layout: default
 
 4. J.W. Hughes, P.B. Snyder, **J.R. Walk**, E.M. Davis, A. Diallo, B. LaBombard, S.G. Baek, R.M. Churchill, M. Greenwald, R.J. Groebner, A.E. Hubbard, B. Lipschultz, E.S. Marmar, T. Osborne, M.L. Reinke, J.E. Rice, C. Theiler, J. Terry, A.E. White, D.G. Whyte, S. Wolfe, and X.Q. Xu. [Pedestal structure and stability in H-mode and I-mode: a comparative study on Alcator C-Mod](https://iopscience.iop.org/0029-5515/53/4/043016). *Nuclear Fusion,* 53(4):043016, 2013.
 
-5. **J.R. Walk**, P.B. Snyder, J.W. Hughes, J.L. Terry, A.E. Hubbard, and P.E. Phillips. [Characterization of the pedestal in Alcator C-Mod ELMing H-modes and comparison with the EPED model]. *Nuclear Fusion,* 52(6):063011, 2012.
+5. **J.R. Walk**, P.B. Snyder, J.W. Hughes, J.L. Terry, A.E. Hubbard, and P.E. Phillips. [Characterization of the pedestal in Alcator C-Mod ELMing H-modes and comparison with the EPED model](http://stacks.iop.org/0029-5515/52/i=6/a=063011). *Nuclear Fusion,* 52(6):063011, 2012.
 
 6. A. Hubbard, E. Marmar, S. Baek, I. Cziegler, A. Dominguez, M. Greenwald, N. Howard, J. Hughes, B. LaBombard, Y. Lin, B. Lipschultz, M. Reinke, J. Rice, P. Snyder, D. Terry, C. Theiler, A. White, **J. Walk**, D. Whyte, S. Wukitch, and the Alcator C-Mod Group. [Progress in performance and understanding of steady ELM-free I-modes on Alcator C-Mod](http://www.psfc.mit.edu/research/alcator/pubs/iaea/2012/Hubbard_IAEA12_I-mode_EX1-3_Proc_Submitted.pdf). In *Proceedings of the 24th IAEA Fusion Energy Conference*, EX/1-3, 2012.
 

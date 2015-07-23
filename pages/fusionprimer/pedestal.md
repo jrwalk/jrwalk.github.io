@@ -3,7 +3,7 @@ title: The Pedestal
 layout: post_norel
 ---
 
-<p>To reach sufficient fusion power gain, a tokamak needs to reach a minimum value of thermal pressure and <i>energy confinement time</i> - the former sets the fusion power density, and the latter measures how well the plasma retains its heat (thus how well heat from fusion can maintain the necessary conditions for a self-sustaining reaction).
+<p>To reach sufficient fusion power gain, a tokamak needs to reach a minimum value of thermal pressure \(p\) and <i>energy confinement time</i> \(\tau_E\) - the former sets the fusion power density, and the latter measures how well the plasma retains its heat (thus how well heat from fusion can maintain the necessary conditions for a self-sustaining reaction).
 The maximum pressure (relative to magnetic field strength) is set by stability limits: we need to make up the difference with confinement improvements.</p>
 
 <p>By default, both energy and particles are driven rapidly from the plasma core by turbulence - and this transport gets worse with more heating power!

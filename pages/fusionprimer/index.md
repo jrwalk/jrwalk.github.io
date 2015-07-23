@@ -2,9 +2,11 @@
 title: Fusion Primer
 layout: default
 ---
-![tokamak](/images/fusionprimer/tokamak.jpg){: .inline-img}
+![cmod](/images/fusionprimer/cmod.jpg){: .inline-img}
 
 # Fusion Primer
+  - [What is Fusion?](/pages/fusionprimer/fusion)
+
   - [The Pedestal](/pages/fusionprimer/pedestal)
 
   - [H-Mode](/pages/fusionprimer/hmode)

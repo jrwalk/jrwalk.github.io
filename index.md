@@ -11,7 +11,7 @@ computer building.  I'm currently a researcher in
 <a href="/pages/fusionprimer">nuclear fusion energy</a> at 
 MIT's Alcator C-Mod tokamak experiment, where I have worked in varying 
 capacities since my sophomore year, completing my doctorate in September
-2014.  I'm always interested in new challenges!</p>
+2014.  Working in fusion means new challenges in extreme environments on some of the most advanced devices ever built - I'm always interested in new projects and problems to solve.</p>
 
 <p>When I'm not coding or in the lab, I like to spend my time hiking, rock 
 climbing, or mountaineering.  Having the White Mountains in NH so close is one 

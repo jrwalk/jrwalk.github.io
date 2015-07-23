@@ -14,9 +14,9 @@ And that's it, right?</p>
 <p>Under the right conditions, the plasma develops <strong>Edge-Localized Modes</strong> (ELMs) - periodic instabilities that relax the pedestal, driving a burst of energy and particles out of the plasma.
 This is sufficient to prevent impurity accumulation.</p>
 ![elmy](/images/fusionprimer/trace_1101214029.jpg){: .wrap-img}
-<p>On current experiments, this is the baseline for high performance, and was thought to be acceptable for fusion reactor use.  However, on a reactor-scale device, these ELMs drive enormous pulsed heat loads - effectively like detonating a hand grenade in the exhaust several times per second, far in excess of material tolerances for the reactor wall.</p>
+<p>On current experiments, the <strong>ELMy H-mode</strong> is the baseline for high performance, and was thought to be acceptable for fusion reactor use.  However, on a reactor-scale device, these ELMs drive enormous pulsed heat loads - effectively like detonating a hand grenade in the exhaust several times per second, far in excess of material tolerances for the reactor wall.</p>
 
 <p>So what we need, then, is high energy confinement, low particle confinement, and to avoid (or mitigate or suppress) large ELMs.
-Fortunately, a number of solutions exist: engineering fixes (external controls that suppress or smooth out the ELM cycle), and physics solutions in the form of steady H-modes without ELMs, where the pedestal is regulated by some benign fluctuation below the ELM limit.  A number of these regimes exist, but each has its pros and cons - high-performance operation without ELMs, then, is a major research focus.</p>
+Fortunately, a number of solutions exist: engineering fixes (external controls that suppress or smooth out the ELM cycle), and physics solutions in the form of steady H-modes without ELMs, where the pedestal is regulated by some benign fluctuation below the ELM limit (the standard example studied on Alcator C-Mod is the "Enhanced \(D_\alpha\) or <strong>EDA H-mode</strong>).  A number of these regimes exist, but each has its pros and cons - high-performance operation without ELMs, then, is a major research focus.  In particular, my research focuses on the novel <strong>I-mode</strong> regime recently discovered on Alcator C-Mod.</p>
 
 Up next: [I-mode](/pages/fusionprimer/imode)

@@ -8,7 +8,7 @@ The I-mode is a promising new operating regime for tokamak fusion reactor design
 
 The I-mode' strong temperature pedestal supports very high core temperatures relative to comparable H-modes, such that at moderate densities the I-mode can attain competitive core pressure (thus fusion power density) despite the relaxed, [naturally-stable](/pages/projects/imode-stability) pedestal.  
 
-However, due to the markedly different physics governing the temperature pedestal and energy confinement in I-mode, $\beta_N$
+However, due to the markedly different physics governing the temperature pedestal and energy confinement in I-mode, $$\beta_N$$
 
 ![scalinglaw](/images/projects/imode-confinement/scalinglaw.jpg){: .inline-img}
 

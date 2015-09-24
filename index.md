@@ -3,6 +3,8 @@ layout: default
 title: John Walk
 ---
 
+![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
+
 <p>Engineer, scientist, developer, tinkerer, adventurer.</p>
 
 <p>I'm interested in clean energy technology, open-source code development, 

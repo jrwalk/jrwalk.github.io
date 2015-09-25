@@ -3,6 +3,8 @@ title: Publications
 layout: default
 ---
 
+![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
+
 ##Doctoral Dissertation
 
 **J.R. Walk**. [Pedestal Structure and Stability in High-Performance Plasmas on Alcator C-Mod](http://dspace.mit.edu/handle/1721.1/95524). Sc.D. thesis, Massachusetts Institute of Technology, 2014.

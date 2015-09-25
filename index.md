@@ -29,6 +29,8 @@ of the best parts of working at MIT!</p>
 * Experimental work generating high-resolution measurements of the 
 [pedestal](/pages/fusionprimer/pedestal)
 in high-performance plasmas for fusion power plants
+* machine-learning methods to predict global energy confinement in reactor-
+relevant plasmas
 * Computational modeling of the large-scale stability and turbulence in the 
 plasma edge
 * developing new open-source, cross-machine data analysis tools for fusion 
@@ -36,7 +38,10 @@ researchers
 
 ##Skills
 **Programming Languages:** scientific and general computing in Python, 
-Matlab, and IDL, SQL database systems
+Matlab, and IDL
+
+**Data Analysis:** machine learning, data & statistical analysis in numpy/scipy/
+pandas, SQL database systems
 
 **Scientific Codes:** user for ELITE and BALOO MHD stability codes, data 
 preparation and interpretation for EPED pedestal model, developer for EQTOOLS 

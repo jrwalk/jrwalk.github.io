@@ -19,7 +19,7 @@ capacities since my sophomore year, completing my doctorate in September
 climbing, or mountaineering.  Having the White Mountains in NH so close is one 
 of the best parts of working at MIT!</p>
 
-##Projects
+## Projects
 {% for post in site.posts limit:5 %}
   - {{ post.date | date: '%B %Y' }} <span class="separator">~</span> [{{ post.title }}]({{ post.url }})
 {% endfor %}

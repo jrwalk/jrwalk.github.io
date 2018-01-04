@@ -26,33 +26,25 @@ of the best parts of working at MIT!</p>
 {% endfor %}
 [more projects...](/pages/projects)
 
-##Current Research Topics
-* Experimental work generating high-resolution measurements of the 
-[pedestal](/pages/fusionprimer/pedestal)
-in high-performance plasmas for fusion power plants
-* machine-learning methods to predict global energy confinement in reactor-
-relevant plasmas
-* Computational modeling of the large-scale stability and turbulence in the 
-plasma edge
-* developing new open-source, cross-machine data analysis tools for fusion 
-researchers
+## Skills
 
-##Skills
-**Programming Languages:** scientific and general computing in Python, 
-Matlab, and IDL
+**Programming Languages:** Python, SQL, Bash, Go, LaTeX, some Scala, 
+Java/Groovy, Javascript
 
-**Data Analysis:** machine learning, data & statistical analysis in numpy/scipy/
-pandas, SQL database systems
+**Data Processing & Pipelines:** Pandas, Dask, Luigi, Apache Spark
 
-**Scientific Codes:** user for ELITE and BALOO MHD stability codes, data 
-preparation and interpretation for EPED pedestal model, developer for EQTOOLS 
-Python toolkit
+**Machine Learning & Statistics:** scikit-learn, XGBoost, H2O, Tensorflow/Keras, 
+PyMC3, Pomegranate 
+
+**Natural Language Processing:** NLTK, TextBlob, Gensim, CoreNLP
+
+**Visualization & Dashboards:** Matplotlib, Seaborn, Bokeh, D3.js, 
+Metabase, Superset 
+
+**Hosting & Deployment:** Flask, Docker, AWS Sagemaker
 
 **Experimental Physics:** data analysis, numerical modeling, laser optics, 
 X-ray and IR spectroscopy, Thomson Scattering spectrometer systems
 
 **Teaching:** laboratory supervision, review/recitation classroom sessions for 
 introductory circuit design for MIT Nuclear Science & Engineering undergraduates
-
-**General:** cross-functional team operations, LaTeX and Adobe Illustrator 
-document preparation

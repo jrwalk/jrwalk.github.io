@@ -5,6 +5,7 @@ layout: default
 ![cmod](/images/fusionprimer/cmod.jpg){: .inline-img}
 
 # Fusion Primer
+
   - [What is Fusion?](/pages/fusionprimer/fusion)
 
   - [The Pedestal](/pages/fusionprimer/pedestal)

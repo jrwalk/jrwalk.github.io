@@ -1,6 +1,6 @@
 url: http://jrwalk.github.io
 permalink: pretty
-highlighter: pygments
+highlighter: rouge
 markdown: kramdown
 exclude: ['Gemfile', 'CNAME', 'README.markdown']
 github: {

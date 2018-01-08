@@ -5,7 +5,14 @@ title: John Walk
 
 ![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
 
-<p>Engineer, scientist, developer, tinkerer, adventurer.</p>
+## Hello.
+
+<p>I am a data scientist</p>
+
+<p>In my previous life, I was a researcher in 
+[nuclear fusion energy](/pages/fusionprimer) at the MIT Plasma Science & Fusion Center</p>
+
+
 
 <p>I'm interested in clean energy technology, open-source code development, 
 data science, exploring the frontiers of plasma physics, aerospace, and 
@@ -13,7 +20,9 @@ computer building.  I'm currently a researcher in
 <a href="/pages/fusionprimer">nuclear fusion energy</a> at 
 MIT's Alcator C-Mod tokamak experiment, where I have worked in varying 
 capacities since my sophomore year, completing my doctorate in September
-2014.  Working in fusion means new challenges in extreme environments on some of the most advanced devices ever built - I'm always interested in new projects and problems to solve.</p>
+2014.  Working in fusion means new challenges in extreme environments on some 
+of the most advanced devices ever built - I'm always interested in new projects 
+and problems to solve.</p>
 
 <p>When I'm not coding or in the lab, I like to spend my time hiking, rock 
 climbing, or mountaineering.  Having the White Mountains in NH so close is one 

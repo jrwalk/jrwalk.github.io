@@ -1,34 +1,43 @@
 ---
 layout: default
-title: John Walk
+title: About
+subtitle: John Walk
 ---
 
 ![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
 
 ## Hello.
 
-I am a data scientist
+I am a senior data scientist currently working at 
+[Cinch Financial](https://cinchfinancial.com/), building a one-of-a-kind personal 
+financial advisor to level the playing field with banks and credit card issuers. 
+As the first hire on the DS team (joined April 2016), I have had a hand in every 
+aspect of Cinch's development as a data-driven company, including designing 
+end-to-end pipelines for machine-learning solutions from raw data 
+ingestion/processing through modeling to production implementation, designing 
+analytics dashboards & data visualizations, and even creating custom training 
+materials for data analytics tools (Python, SQL, etc.) for junior business/data 
+analysts.  I'm always looking for new ways to expand my toolkit & experience for 
+ML & deep learning, statistical/Bayesian modeling, data visualization, and 
+scalable data pipelines.
 
 In my previous life, I was a researcher in 
 [nuclear fusion energy](/pages/fusionprimer) at the MIT Plasma Science & Fusion 
-Center's [Alcator C-Mod tokamak experiment](http://www.psfc.mit.edu/research/magnetic-fusion-energy) 
+Center's [Alcator C-Mod tokamak experiment](http://www.psfc.mit.edu/research/magnetic-fusion-energy), 
+where I worked in various capacities since my Sophomore year, completing my 
+doctorate in September 2014.  Following academic postdoctoral research at MIT,
+I made the conversion to data science through the 
+[Insight Data Science](http://insightdatascience.com/) program, an intensive 
+postdoctoral fellowship geared towards STEM PhDs transitioning to data-driven 
+industry, with the Boston session I attended particularly geared towards 
+healthcare & biomedical applications -- I was particularly drawn to the 
+opportunity for data science in socially-beneficial applications.
 
+Outside of work, I spend my time hiking, rock & ice climbing, and 
+mountaineering.  While most of my experience is in the excellent White Mountains 
+of New Hampshire, I've also logged ascents of Mt. Rainier (14,411') in Washington, 
+and Ixtaccíhuatl (17,159') and Pico de Orizaba (18,491') in Mexico.
 
-
-
-<p>I'm interested in clean energy technology, open-source code development, 
-data science, exploring the frontiers of plasma physics, aerospace, and 
-computer building.  I'm currently a researcher in 
-<a href="/pages/fusionprimer">nuclear fusion energy</a> at 
-MIT's Alcator C-Mod tokamak experiment, where I have worked in varying 
-capacities since my sophomore year, completing my doctorate in September
-2014.  Working in fusion means new challenges in extreme environments on some 
-of the most advanced devices ever built - I'm always interested in new projects 
-and problems to solve.</p>
-
-<p>When I'm not coding or in the lab, I like to spend my time hiking, rock 
-climbing, or mountaineering.  Having the White Mountains in NH so close is one 
-of the best parts of working at MIT!</p>
 
 ## Projects
 
@@ -37,7 +46,7 @@ of the best parts of working at MIT!</p>
 {% endfor %}
 [more projects...](/pages/projects)
 
-## Skills
+## Skills & Tools
 
 **Programming Languages:** Python, SQL, Bash, Go, LaTeX, some Scala, 
 Java/Groovy, Javascript

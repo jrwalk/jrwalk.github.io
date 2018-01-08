@@ -1,6 +1,7 @@
 ---
 title: Projects
 layout: default
+subtitle: John Walk
 ---
 
 ![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}

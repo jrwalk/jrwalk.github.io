@@ -1,15 +1,16 @@
 ---
 title: Publications
 layout: default
+subtitle: John Walk
 ---
 
 ![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
 
-##Doctoral Dissertation
+## Doctoral Dissertation
 
 **J.R. Walk**. [Pedestal Structure and Stability in High-Performance Plasmas on Alcator C-Mod](http://dspace.mit.edu/handle/1721.1/95524). Sc.D. thesis, Massachusetts Institute of Technology, 2014.
 
-##Selected Publications
+## Selected Publications
 
 1. **J.R. Walk**, J.W. Hughes, A.E. Hubbard, J.L. Terry, D.G. Whyte, A.E. White, S.G. Baek, M.L. Reinke, C. Theiler, R.M. Churchill, J.E. Rice, P.B. Snyder, T. Osborne, A. Dominguez, and I. Cziegler. [Edge-localized mode avoidance and pedestal structure in I-mode plasmas](http://scitation.aip.org/content/aip/journal/pop/21/5/10.1063/1.4872220). *Physics of Plasmas,* (21)5:056103, 2014.
 

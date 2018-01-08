@@ -1,5 +1,7 @@
 # jrwalk.github.io
-Portfolio, CV, projects, photos, and bio as a Jekyll site.  Math typesetting in markdown accomplished using [MathJax](https://www.mathjax.org/) distributed network service.
+Portfolio, CV, projects, photos, and bio as a Jekyll site.  
+Math typesetting in markdown accomplished using 
+[MathJax](https://www.mathjax.org/) distributed network service.
 
 ## To install:
 * Install rubygems: <code>sudo apt-get install rubygems</code>

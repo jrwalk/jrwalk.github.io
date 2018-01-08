@@ -1,6 +1,7 @@
 ---
 title: Fusion Primer
 layout: default
+subtitle: John Walk
 ---
 ![cmod](/images/fusionprimer/cmod.jpg){: .inline-img}
 

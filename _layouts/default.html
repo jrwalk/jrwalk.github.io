@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-     <title>{{ page.title }}{% if page.title %} | {% endif %}</title>
+     <title>{{ page.title }}{% if page.subtitle %} | {{ page.subtitle }} {% endif %}</title>
 
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="stylesheet" href="/stylesheets/pygment_trac.css">
@@ -18,8 +18,9 @@
       <header>
         <h1><a href="/">John Walk</a></h1>
 
-        <p class="view"><a href="/pages/fusionprimer">Fusion Primer</a></p>
         <p class="view"><a href="/pages/projects">Projects</a></p>
+        <p class="view"><a href="/pages/fusionprimer">Fusion Primer</a></p>
+        <p class="view"><a href="/pages/gallery">Climbing Photos</a></p>
         <p class="view"><a href="/pages/publications">Publications</a></p>
         <p class="view"><a href="https://github.com/jrwalk">Github</a></p>
         <p class="view"><a href="https://www.linkedin.com/in/walkjr">LinkedIn</a></p>

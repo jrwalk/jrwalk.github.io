@@ -7,10 +7,12 @@ title: John Walk
 
 ## Hello.
 
-<p>I am a data scientist</p>
+I am a data scientist
 
-<p>In my previous life, I was a researcher in 
-[nuclear fusion energy](/pages/fusionprimer) at the MIT Plasma Science & Fusion Center</p>
+In my previous life, I was a researcher in 
+[nuclear fusion energy](/pages/fusionprimer) at the MIT Plasma Science & Fusion 
+Center's [Alcator C-Mod tokamak experiment](http://www.psfc.mit.edu/research/magnetic-fusion-energy) 
+
 
 
 

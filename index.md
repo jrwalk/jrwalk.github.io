@@ -14,30 +14,36 @@ financial advisor to level the playing field with banks and credit card issuers.
 As the first hire on the DS team (joined April 2016), I have had a hand in every 
 aspect of Cinch's development as a data-driven company, including designing 
 end-to-end pipelines for machine-learning solutions from raw data 
-ingestion/processing through modeling to production implementation, designing 
-analytics dashboards & data visualizations, and even creating custom training 
-materials for data analytics tools (Python, SQL, etc.) for junior business/data 
-analysts.  I'm always looking for new ways to expand my toolkit & experience for 
-ML & deep learning, statistical/Bayesian modeling, data visualization, and 
-scalable data pipelines.
+ingestion/processing to production implementation, designing analytics 
+dashboards & data visualizations, and creating custom training materials for 
+data analytics tools (Python, SQL, etc.) for junior business/data 
+analysts.
 
-In my previous life, I was a researcher in 
-[nuclear fusion energy](/pages/fusionprimer) at the MIT Plasma Science & Fusion 
-Center's [Alcator C-Mod tokamak experiment](http://www.psfc.mit.edu/research/magnetic-fusion-energy), 
+Prior to joining Cinch, I was a researcher in [nuclear fusion energy](/pages/fusionprimer) 
+at the MIT Plasma Science & Fusion Center's 
+[Alcator C-Mod tokamak experiment](http://www.psfc.mit.edu/research/magnetic-fusion-energy), 
 where I worked in various capacities since my Sophomore year, completing my 
-doctorate in September 2014.  Following academic postdoctoral research at MIT,
-I made the conversion to data science through the 
-[Insight Data Science](http://insightdatascience.com/) program, an intensive 
-postdoctoral fellowship geared towards STEM PhDs transitioning to data-driven 
-industry, with the Boston session I attended particularly geared towards 
-healthcare & biomedical applications -- I was particularly drawn to the 
-opportunity for data science in socially-beneficial applications.
+doctorate in September 2014.  
+
+Following academic postdoctoral research at MIT,I made the conversion to data 
+science through the [Insight Data Science](http://insightdatascience.com/) 
+program, an intensive postdoctoral fellowship geared towards STEM PhDs 
+transitioning to data-driven industry.  The Boston session I attended 
+was geared towards healthcare & biomedical applications -- I was 
+particularly drawn to the opportunity for data science in socially-beneficial 
+applications.
 
 Outside of work, I spend my time hiking, rock & ice climbing, and 
 mountaineering.  While most of my experience is in the excellent White Mountains 
 of New Hampshire, I've also logged ascents of Mt. Rainier (14,411') in Washington, 
 and Ixtaccíhuatl (17,159') and Pico de Orizaba (18,491') in Mexico.
 
+<!---
+## Interests
+
+ML & deep learning, statistical learning, natural language processing, data 
+engineering pipelines
+-->
 
 ## Projects
 

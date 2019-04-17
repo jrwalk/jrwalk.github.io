@@ -4,7 +4,7 @@ layout: default
 subtitle: John Walk
 ---
 
-![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
+![ProfilePhoto](/images/headers/rainier.jpg){: .inline-img}
 
 # Projects
 {% for post in site.posts %}

@@ -4,7 +4,7 @@ layout: default
 subtitle: John Walk
 ---
 
-![ProfilePhoto](/images/headers/faroes.jpg){: .inline-img}
+![ProfilePhoto](/images/headers/glacier.jpg){: .inline-img}
 
 ## Doctoral Dissertation
 
@@ -16,7 +16,7 @@ subtitle: John Walk
 
 2. A. Diallo, J.W. Hughes, M. Greenwald, B. LaBombard, E. Davis, S.G. Baek, C. Theiler, P. Snyder, J. Canik, **J.R. Walk**, T. Golfinopoulos, J. Terry, R.M. Churchill, A. Hubbard, M. Porkolab, L. Delgado-Aparicio, M.L. Reinke, A. White, and the Alcator C-Mod Team. [Observation of edge instability limiting the pedestal growth in tokamak plasmas](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.112.115001). *Physical Review Letters,* 112:115001, 2014.
 
-3. M.A. Chilenski, I.C. Faust, and **J.R. Walk**. Eqtools: extensible, open-source, cross-machine Python tools for working with magnetic equilibria.  Manuscript in preparation, 2014.
+3. M.A. Chilenski, I.C. Faust, and **J.R. Walk**. [Eqtools: extensible, open-source, cross-machine Python tools for working with magnetic equilibria](https://www.sciencedirect.com/science/article/pii/S001046551630282X).  *Computer Physics Communications,* 210:155-162, 2017.
 
 4. J.W. Hughes, P.B. Snyder, **J.R. Walk**, E.M. Davis, A. Diallo, B. LaBombard, S.G. Baek, R.M. Churchill, M. Greenwald, R.J. Groebner, A.E. Hubbard, B. Lipschultz, E.S. Marmar, T. Osborne, M.L. Reinke, J.E. Rice, C. Theiler, J. Terry, A.E. White, D.G. Whyte, S. Wolfe, and X.Q. Xu. [Pedestal structure and stability in H-mode and I-mode: a comparative study on Alcator C-Mod](https://iopscience.iop.org/0029-5515/53/4/043016). *Nuclear Fusion,* 53(4):043016, 2013.
 

@@ -14,8 +14,8 @@ I'm a data scientist & ML engineer.
 
 #### what do I love?
 
-I build scalable data solutions, love natural-language processing problems,
-and teach Python and software engineering best practices to other data
+Building scalable data solutions, solving natural-language processing problems,
+and teaching Python and software engineering best practices to other data
 scientists.
 
 #### what's my story?

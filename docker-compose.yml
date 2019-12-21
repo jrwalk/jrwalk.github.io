@@ -6,8 +6,11 @@ services:
       context: ./
     environment:
       BUNDLE_GEMFILE: /opt/app/Gemfile
+      LC_ALL: "C.UTF-8"
+      LANG: "en_US.UTF-8"
+      # LANGUAGE: "en_US.UTF-8"
     volumes:
       - .:/opt/app
     ports:
       - "4000:4000"
-    command: bundle exec jekyll --watch
+    command: bundle exec jekyll serve --watch --host 0.0.0.0

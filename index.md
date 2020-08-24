@@ -48,10 +48,10 @@ Python, Cython, C++, Go, Javascript (React.js), Bash, some Scala, Java/Groovy
 Apache Airflow, Apache Spark, Dask, Pandas, Luigi
 
 **Database Technologies:**
-SQL (Postgres, MSSQL Server), Hive, Vertica
+SQL (Postgres, MSSQL Server), Hive, Vertica, AWS Aurora, AWS Athena
 
 **Neural Networks & Deep Learning:**
-Tensorflow, Keras, some PyTorch
+Tensorflow, Keras, PyTorch
 
 **Machine Learning & Statistics:**
 scikit-learn, XGBoost, H2O, PyMC3, Pomegranate, LightFM
@@ -60,7 +60,7 @@ scikit-learn, XGBoost, H2O, PyMC3, Pomegranate, LightFM
 FastText, SpaCy, NLTK, Gensim, CoreNLP
 
 **Visualization & Dashboards:**
-Matplotlib, Seaborn, Bokeh, D3.js, Metabase, Superset
+Matplotlib, Seaborn, Bokeh, Altair, D3.js, Metabase, Superset
 
 **Hosting & Deployment:**
 Flask, FastAPI, Docker, AWS Sagemaker

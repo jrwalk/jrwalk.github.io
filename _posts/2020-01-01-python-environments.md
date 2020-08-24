@@ -4,7 +4,7 @@ layout: post_norel
 permalink: /pages/projects/managing-python-environments
 ---
 
-tl;dr [read more here](https://www.pluralsight.com/tech-blog/managing-python-environments/)
+tl;dr [read more on the Pluralsight tech blog](https://www.pluralsight.com/tech-blog/managing-python-environments/)
 
 It's really, really easy for your Python environment(s) to become a [messy, convoluted disaster](https://xkcd.com/1987/).
 What's worse, there's a whole zoo of tools that can interact with each other in weird ways (or not at all) for managing Python environments - this can be one of the biggest hurdles a new Python developer will face.

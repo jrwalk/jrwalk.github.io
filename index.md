@@ -63,4 +63,4 @@ FastText, SpaCy, NLTK, Gensim, CoreNLP
 Matplotlib, Seaborn, Bokeh, Altair, D3.js, Metabase, Superset
 
 **Hosting & Deployment:**
-Flask, FastAPI, Docker, AWS Sagemaker
+Flask, FastAPI, Docker, Kubernetes, AWS Sagemaker

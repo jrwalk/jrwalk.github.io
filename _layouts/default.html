@@ -1,9 +1,10 @@
 <!doctype html>
 <html>
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-     <title>{{ page.title }}{% if page.subtitle %} | {{ page.subtitle }} {% endif %}</title>
+    <title>{{ page.title }}{% if page.subtitle %} | {{ page.subtitle }} {% endif %}</title>
 
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="stylesheet" href="/stylesheets/pygment_trac.css">
@@ -13,6 +14,7 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
+
   <body>
     <div class="wrapper">
       <header>
@@ -22,12 +24,13 @@
         <p class="view"><a href="/pages/fusionprimer">Fusion Primer</a></p>
         <p class="view"><a href="/pages/gallery">Climbing Photos</a></p>
         <p class="view"><a href="/pages/publications">Publications</a></p>
+        <p class="view"><a href="https://www.pluralsight.com/tech-blog/author/john-walk">Pluralsight Tech Blog</a></p>
         <p class="view"><a href="https://github.com/jrwalk">Github</a></p>
         <p class="view"><a href="https://www.linkedin.com/in/walkjr">LinkedIn</a></p>
 
       </header>
       <section>
-       {{ content }}
+        {{ content }}
       </section>
       <footer>
         <p><small></small></p>
@@ -35,4 +38,5 @@
     </div>
     <script src="/scale.fix.js"></script>
   </body>
+
 </html>

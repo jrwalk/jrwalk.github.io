@@ -1,12 +1,9 @@
 picture_path: /tattoo
 preview:
-  filename: shoulder
-  original: shoulder.jpg
-  thumbnail: shoulder.jpg
+  filename: wrist1
+  original: wrist1.jpg
+  thumbnail: wrist1.jpg
 pictures:
-- filename: shoulder
-  original: shoulder.jpg
-  thumbnail: shoulder.jpg
 - filename: wrist3
   original: wrist3.jpg
   thumbnail: wrist3.jpg

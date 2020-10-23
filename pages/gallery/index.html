@@ -2,6 +2,7 @@
 title: Photography
 layout: default
 subtitle: John Walk
+support: [jquery, gallery]
 ---
 
 <h1>{{ page.title }}</h1>
@@ -11,7 +12,6 @@ subtitle: John Walk
 {% for gallery in site.data.galleries.overview %}
 {% if count == 0 %}<div class="row">{% endif %}
   <div class="half-width gallery-preview {{ align }}">
-    <h2>{{ gallery.title }}</h2>
     <a href="{{ site.url }}{{ site.baseurl }}/pages/gallery/{{ gallery.directory }}/">
       <img alt="{{ gallery.title }}"
         src="{{ site.url }}{{ site.baseurl }}/images/gallery/{% if gallery.picture_path %}{{ gallery.picture_path }}{% else %}{{ gallery.directory }}{% endif %}/{{ gallery.preview.thumbnail }}" />

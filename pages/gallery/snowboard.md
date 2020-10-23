@@ -1,6 +1,6 @@
 ---
 layout: gallery
-title: Custom snowboard by Marhar Snowboards
+title: Custom snowboard Art
 support: [jquery, gallery]
 ---
 

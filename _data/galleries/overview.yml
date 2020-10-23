@@ -1,5 +1,5 @@
 -
- title: Custom snowboard by Marhar Boards
+ title: Custom Snowboard Art
  directory: snowboard
  preview:
   filename: snowboard-04
@@ -16,6 +16,6 @@
   title: Tattoo
   directory: tattoo
   preview:
-      filename: shoulder
-      original: shoulder.jpg
-      thumbnail: shoulder.jpg
+      filename: wrist1
+      original: wrist1.jpg
+      thumbnail: wrist1.jpg

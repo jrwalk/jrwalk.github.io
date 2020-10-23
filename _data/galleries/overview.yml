@@ -1,0 +1,21 @@
+-
+ title: Custom snowboard by Marhar Boards
+ directory: snowboard
+ preview:
+  filename: snowboard-04
+  original: snowboard-04.JPG
+  thumbnail: snowboard-04.JPG
+-
+  title: Frankenstein Ice Climbing
+  directory: frankenstein
+  preview:
+    filename: IMG_20190105_131312
+    original: IMG_20190105_131312.jpg
+    thumbnail: IMG_20190105_131312.jpg
+-
+  title: Tattoo
+  directory: tattoo
+  preview:
+      filename: shoulder
+      original: shoulder.jpg
+      thumbnail: shoulder.jpg

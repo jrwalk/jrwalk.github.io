@@ -1,10 +1,10 @@
 -
- title: Custom Snowboard Art
- directory: snowboard
- preview:
-  filename: snowboard-04
-  original: snowboard-04.JPG
-  thumbnail: snowboard-04.JPG
+  title: Custom Snowboard Art
+  directory: snowboard
+  preview:
+    filename: snowboard-04
+    original: snowboard-04.JPG
+    thumbnail: snowboard-04.JPG
 -
   title: Frankenstein Ice Climbing
   directory: frankenstein
@@ -16,6 +16,6 @@
   title: Tattoo
   directory: tattoo
   preview:
-      filename: wrist1
-      original: wrist1.jpg
-      thumbnail: wrist1.jpg
+    filename: wrist1
+    original: wrist1.jpg
+    thumbnail: wrist1.jpg

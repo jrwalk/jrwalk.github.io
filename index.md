@@ -42,7 +42,7 @@ I also enjoy board and tabletop games, and have worked for several years as an E
 ## Skills & Tools
 
 **Programming Languages:**
-Python, Cython, C++, Go, Javascript (React.js), Bash, some Scala, Java/Groovy
+Python, Cython, C++, Rust, Javascript (React.js), Bash, some Scala
 
 **Data Processing & Pipelines:**
 Apache Airflow, Apache Spark, Dask, Pandas, Luigi
@@ -63,4 +63,4 @@ FastText, SpaCy, NLTK, Gensim, CoreNLP
 Matplotlib, Seaborn, Bokeh, Altair, D3.js, Metabase, Superset
 
 **Hosting & Deployment:**
-Flask, FastAPI, Docker, Kubernetes, AWS Sagemaker
+FastAPI, Flask, Docker, Kubernetes, AWS Sagemaker

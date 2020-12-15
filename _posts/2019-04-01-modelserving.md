@@ -2,6 +2,7 @@
 title: A Simple, Dockerized ML Model Serving API
 layout: post_norel
 permalink: /pages/projects/model-serving
+description: "serving ML models with Flask for fun and profit"
 ---
 
 Rather than directly interfacing ML models with a broader production code

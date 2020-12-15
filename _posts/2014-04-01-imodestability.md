@@ -2,6 +2,7 @@
 title: I-Mode Stability Modeling (doctoral thesis)
 layout: post
 permalink: /pages/projects/imode-stability
+description: "Doctoral thesis work on I-Mode pedestal stability modeling"
 ---
 
 The [I-mode](/pages/fusionprimer/imode) presents a number of attractive properties for a tokamak reactor scenario, notably good performance with minimal impurity retention, and an apparent natural lack of large [ELMs](/pages/fusionprimer/hmode).

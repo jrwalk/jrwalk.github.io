@@ -2,6 +2,7 @@
 title: I-Mode Pedestal Structure (doctoral thesis)
 layout: post
 permalink: /pages/projects/imode-pedestal
+description: "Doctoral thesis work on I-Mode pedestal structure"
 ---
 
 The [I-mode](/pages/fusionprimer/imode) is a promising new operating regime for tokamak fusion reactor designs.  As a component of my thesis research, I developed the first comprehensive study of the [pedestal](/pages/fusionprimer/pedestal) structure in I-mode, using a series of dedicated experiments on MIT's Alcator C-Mod tokamak.  Understanding the response of the pedestal to engineering inputs, its impact on overall performance, and implications for stability against ELMs is critical to extrapolating the I-mode (which at present is still a not-entirely-understood experimental process most readily studied on C-Mod) to reliable operation on other tokamaks, and ultimately to reactor-scale devices.
@@ -14,7 +15,7 @@ In contrast to the temperature pedestal, the density profile in I-mode presents 
 
 ![fuelingprofiles](/images/projects/imode-pedestal/fuelingprofiles.jpg){: .inline-img}
 
-This independent control of edge density and temperature (rather than the profiles being set by inherent stability or transport limits) is highly beneficial for a reactor scenario, letting the operator dial in the desired edge properties.  It also allows for easier operation on a reactor-scale device, accessing the I-mode at lower density and heating power levels, then stepping up matched increases in fueling and heating power to reach the target pressure.  
+This independent control of edge density and temperature (rather than the profiles being set by inherent stability or transport limits) is highly beneficial for a reactor scenario, letting the operator dial in the desired edge properties.  It also allows for easier operation on a reactor-scale device, accessing the I-mode at lower density and heating power levels, then stepping up matched increases in fueling and heating power to reach the target pressure.
 
 ##Impact on Global Performance
 

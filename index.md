@@ -54,7 +54,7 @@ scikit-learn, XGBoost, H2O, PyMC3, Pomegranate, LightFM
 FastText, SpaCy, NLTK, Gensim, CoreNLP
 
 **Data Technologies**
-Elasticsearch, SQL (Postgres, MS SQL), Hive, Vertica, Apache Kafka, AWS Athena
+Elasticsearch, SQL, Apache Kafka, Apache Hive, Vertica, AWS Athena
 
 **Data Processing & Pipelines:**
 Apache Airflow, Dask, Apache Spark, Pandas, Luigi

@@ -8,12 +8,33 @@ description: "Building Recommender systems, part I."
 On the Discovery team at Pluralsight, we're responsible for all aspects of our users' content exploration journey.
 Some use cases are satisfied by our [core search functionality](https://medium.com/data-science-and-machine-learning-at-pluralsight/an-overview-of-search-at-pluralsight-2fc82173600f), but others require suggesting topics or content to users that don't necessarily know what they're looking for.
 
+This is the realm of _recommender models_ - in this post, we'll examine building a recommender system on a popular open-source dataset.
+In [part II](/pages/projects/recommender-part-2), we'll take that recommendation model and build production-grade model serving infrastructure around it.
+Let's dive in!
+
+<> TODO add github link
+
 ## The Data
 
 We'll be using the MovieLens 25M dataset, a collation of twenty-five million movie ratings on a five-star scale collated by the GroupLens team at University of Minnesota, plus genre tags for every reviewed movie.
-In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database - for the purposes of this demo, we can assume simply that the ratings can be accessed easily in a streaming fashion.
+In total, this comprises some 162,000 users rating 62,000 movies.
+While this is probably overkill (and MovieLens does provide smaller datasets) this still ends up being tractable even running locally on my laptop and provides a good picture for a production-scale recommender.
+
+In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database - for the purposes of this demo, we can assume simply that the ratings can be accessed easily from a datastore (although the specifics of that storage will be important when we start working on serving our recommendations in [part II](/pages/projects/recommender-part-2)).
 
 ## Collaborative Filtering Models
+
+Collaborative-filtering models are a bit of an odd duck, at least compared to the model types a beginner machine-learning practitioner might encounter.
+Rather than directly predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
+Recommender models do end up predicting a continuous score, generally intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
+
+To start, we envision our _interactions matrix_ $$M$$: a large matrix of shape `(n_users, n_items)` containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input - in this case, the items are movies).
+Each element $$M_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
+This is our first branch point in designing recommenders:
+
+(1) _explicit_ interaction, like a user providing a 5-star rating for an item based on their preferences
+
+(2) _implicit_ interaction, where we infer a user's preference - for example, modeling click-throughs where any interaction is considered positive, and a lack of interaction negative
 
 ### Sideloading Metadata
 

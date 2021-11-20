@@ -8,7 +8,7 @@ description: "Building Recommender systems, part I."
 On the Discovery team at Pluralsight, we're responsible for all aspects of our users' content exploration journey.
 Some use cases are satisfied by our [core search functionality](https://medium.com/data-science-and-machine-learning-at-pluralsight/an-overview-of-search-at-pluralsight-2fc82173600f), but others require suggesting topics or content to users that don't necessarily know what they're looking for.
 
-This is the realm of _recommender models_ - in this post, we'll examine building a recommender system on a popular open-source dataset.
+This is the realm of _recommender models_ -- in this post, we'll examine building a recommender system on a popular open-source dataset using the [LightFM](https://making.lyst.com/lightfm/docs/home.html) package.
 In [part II](/pages/projects/recommender-part-2), we'll take that recommendation model and build production-grade model serving infrastructure around it.
 Let's dive in!
 
@@ -20,7 +20,7 @@ We'll be using the MovieLens 25M dataset, a collation of twenty-five million mov
 In total, this comprises some 162,000 users rating 62,000 movies.
 While this is probably overkill (and MovieLens does provide smaller datasets) this still ends up being tractable even running locally on my laptop and provides a good picture for a production-scale recommender.
 
-In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database - for the purposes of this demo, we can assume simply that the ratings can be accessed easily from a datastore (although the specifics of that storage will be important when we start working on serving our recommendations in [part II](/pages/projects/recommender-part-2)).
+In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database -- for the purposes of this demo, we can assume simply that the ratings can be accessed easily from a datastore (although the specifics of that storage will be important when we start working on serving our recommendations in [part II](/pages/projects/recommender-part-2)).
 
 ## Collaborative Filtering Models
 
@@ -28,15 +28,59 @@ Collaborative-filtering models are a bit of an odd duck, at least compared to th
 Rather than directly predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
 Recommender models do end up predicting a continuous score, generally intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
 
-To start, we envision our _interactions matrix_ $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input - in this case, the items are movies).
+To start, we envision our _interaction matrix_ $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input -- in this case, the items are movies).
 Each element $$r_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
 This is our first branch point in designing recommenders:
 
 (1) _explicit_ interaction, like a user providing a 5-star rating for an item based on their preferences
 
-(2) _implicit_ interaction, where we infer a user's preference - for example, modeling click-throughs or skips as positive/negative interactions, and treating lack of interaction as neutral or negative
+(2) _implicit_ interaction, where we infer a user's preference -- for example, modeling click-throughs or skips as positive/negative interactions, and treating lack of interaction as neutral or negative
 
 We can think of each row of the matrix as a $$n_{items}$$-sized vector decribing a single user; likewise, each column is a $$n_{users}$$-sized vector describing each item (movie, in this case).
+Given vector representations for users and items, then, we can work in terms of similarity (via vector-based distance metrics), which gets at the core of collaborative filtering -- similar users like the same items, and similar items are liked by the same users.
+Our recommendation task, then, is to surface the best new items based on a similarity metric: that is, a user is likely to like movies similar to ones they've already enjoyed, or ones that were liked by other users similar to them.
+
+However, we've run into a problem here: in any realistic dataset, any given user will only interact with a tiny fraction of the available inventory of items.
+This means that our interaction matrix $$R$$ is extremely sparse (less than a percent non-null entries, in this case), so directly computing vector similarity for our user and item representations is fraught.
+Coming from working on a lot of NLP problems, I view this as similar to a bag-of-words problem -- the available vocabulary of tokens is much larger than those that would be used in any reasonable length of text.
+Much like an NLP problem, we approach it by learning a dense representation for our users and movies from the sparse interactions.
+
+### Matrix Factorization
+
+Consider our interaction matrix $$R$$.
+We wish to generate an approximation of the form
+
+$$
+R \approx \hat{R} = UV^T
+$$
+
+where $$U$$ is of shape $$n_{users} \times d$$ and $$V$$ is of shape $$n_{items} \times d$$.
+In this scheme, the matrices $$U$$ and $$V$$ represent our users and items -- that is, each row of $$U$$ is a $$d$$-dimensional representation of a user, and each row of $$V$$ is a $$d$$-dimensional representation of an item.
+Ideally we want to minimize the deviation of our approximation $$\hat{R}$$ from the original $$R$$ such that as much information as possible is retained.
+
+We could do this analytically, e.g. by truncating the results of a singular-value decomposition, but in practice for many collaborative filtering datasets this would be computationally intractible.
+Instead, we'll learn our representations from individual interactions $$r_{ij} \in R$$, via
+
+$$
+\hat{r}_{ij} = f(\vec{u}_i \cdot \vec{v}_j)
+$$
+
+where we learn to predict an individual rating based on a similarity function of the dense user and item vectors (which are simply rows of $$U$$ and $$V$$, taken in a dot product).
+Given a sizeable disparity in ratings between users and movies (e.g., a 4-star rating could indicate drastically different degrees of preference for two different users), we usually want to account for a per-user and per-item bias term.
+The above then becomes
+
+$$
+\hat{r}_{ij} = f(\vec{u}_i \cdot \vec{v}_j + b_i + b_j)
+$$
+
+which is the form used in the [original LightFM paper [1]](https://arxiv.org/pdf/1507.08439.pdf).
+Several functions are appropriate for $$f(\cdot)$$ here: simply using an identity function allows us to predict numerical ratings, while squashing the vector product through a sigmoid function maps to binary preferences.
+
+This has the added benefit of greatly streamlining training -- rather than needing to work with the entire matrix in memory, we only care about per-element loss $$L(r_{ij}, \hat{r}_{ij})$$, making the problem naturally suited to training via stochastic gradient descent.
+
+### Ranking Loss Functions
+
+In the case of explicit feedback, where our prediction $$\hat{r}_{ij}$$ directly indicates a numerical score or rating, this behaves essentially like a regression problem -- we can learn our embedded representation to minimize an appropriate loss (e.g., mean-squared error)
 
 ## Modeling with LightFM
 
@@ -163,3 +207,5 @@ def approximate_rank(
         for k, score in zip(ids, scores)
     ]
 ```
+
+[1] https://arxiv.org/pdf/1507.08439.pdf

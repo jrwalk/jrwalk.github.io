@@ -28,13 +28,17 @@ Collaborative-filtering models are a bit of an odd duck, at least compared to th
 Rather than directly predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
 Recommender models do end up predicting a continuous score, generally intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
 
-To start, we envision our _interactions matrix_ $$M$$: a large matrix of shape `(n_users, n_items)` containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input - in this case, the items are movies).
-Each element $$M_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
+To start, we envision our _interactions matrix_ $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input - in this case, the items are movies).
+Each element $$r_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
 This is our first branch point in designing recommenders:
 
 (1) _explicit_ interaction, like a user providing a 5-star rating for an item based on their preferences
 
-(2) _implicit_ interaction, where we infer a user's preference - for example, modeling click-throughs where any interaction is considered positive, and a lack of interaction negative
+(2) _implicit_ interaction, where we infer a user's preference - for example, modeling click-throughs or skips as positive/negative interactions, and treating lack of interaction as neutral or negative
+
+We can think of each row of the matrix as a $$n_{items}$$-sized vector decribing a single user; likewise, each column is a $$n_{users}$$-sized vector describing each item (movie, in this case).
+
+## Modeling with LightFM
 
 ### Sideloading Metadata
 

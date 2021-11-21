@@ -162,6 +162,84 @@ interactions, weights = dataset.build_interactions(top_rated)
 Note that we actually output two matrices here: while both correspond in size to our matrix $$R$$ (that is, it's $$n_{users} \times n_{items}$$), `interactions` stores only binary on/off states for each interaction $$r_{ij}$$, while `weights` stores a weight of the corresponding interaction, which can be either explicitly supplied to `build_interactions` or computed from repeated `(user_id, movie_id)` interactions.
 To recover the matrix $$R$$ with numerical ratings (e.g., when we care about numerical score, or want to use repeated interaction to indicate stronger preference), we simply multiply the two matrices element-wise.
 In this case, we actually only care about the binary state, so we can safely discard the `weights` matrix.
+Examining the interactions matrix, we see
+
+```python
+>> print(interactions)
+<162541x62423 sparse matrix of type '<class 'numpy.int32'>'
+	with 3612474 stored elements in COOrdinate format>
+```
+
+meaning our model is extremely sparse: less than a tenth of a percent of possible interactions are actually populated.
+
+For validation purposes, we can split this into a training and test set:
+
+```python
+from lightfm.cross_validation import random_train_test_split
+
+train, test = random_train_test_split(interactions, test_percentage=0.2, random_state=42)
+```
+
+Each of these interaction matrices is of the same size as our original: rather than splitting users or movies out, we randomly select individual interactions to remove for the test set, such that the model is trained on a masked subset of user/item interactions.
+Effectively, the test metric becomes "given 80% of a user's interactions, how well can we predict the last 20%?".
+This makes no guarantees that users or items will be well-represented in either split -- for very sparse data, it is possible that a given user or movie may have few or no interactions in the test set.
+However, in general this gives us a good picture of the model's performance on unseen interactions for known users.
+
+Next, we build our sideloaded movie features:
+
+```python
+movie_genres = conn.execute("select id, genres from movies;")
+item_features = dataset.build_item_features(movie_genres)
+```
+
+Examining this matrix, we see
+
+```python
+<62423x62443 sparse matrix of type '<class 'numpy.float32'>'
+	with 174730 stored elements in Compressed Sparse Row format>
+```
+
+Strictly, this is a selection matrix for item features: without any sideloaded features, this would simply be a $$62423 \times 62423$$ identity matrix.
+The additional 20 columns contain indicators for the 20 distinct genre tags that can be appended to a movie, such that the vector representation of a movie is composed of a linear combination of its self-referential "identity" feature and its genre vectors, all of which are learned during training time.
+
+We're now ready to train our model:
+
+```python
+from lightfm import LightFM
+
+num_threads = ...  # however many cores you want to devote to it!
+
+model = LightFM(loss="warp", no_components=64)
+model.fit(
+    train, item_features=item_features, epochs=50, num_threads=num_threads
+)
+```
+
+Alternately, we could warm-start the training on an existing method with the `fit_partial` method.
+As the scoring involves individual samples in stochastic gradient descent, training is well-suited to parallelization.
+Given a trained model, we can evaluate the model:
+
+```python
+from lightfm.evaluation import precision_at_k, auc_score
+
+train_p = precision_at_k(
+    model, train, k=5, item_features=item_features, num_threads=num_threads
+).mean()
+test_p = precision_at_k(
+    model, validate, k=5, item_features=item_features, num_threads=num_threads
+).mean()
+train_auc = auc_score(
+    model, train, item_features=item_features, num_threads=num_threads
+).mean()
+test_auc = auc_score(
+    model, validate, item_features=item_features, num_threads=num_threads
+).mean()
+
+print(f"training p@5: {train_p:.3f}")
+print(f"testing p@5: {test_p:.3f}")
+print(f"training AUC: {train_auc:.3f}")
+print(f"testing AUC: {test_auc:.3f}")
+```
 
 ## Model Inference
 

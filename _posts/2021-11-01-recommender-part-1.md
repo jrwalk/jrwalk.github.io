@@ -10,9 +10,8 @@ Some use cases are satisfied by our [core search functionality](https://medium.c
 
 This is the realm of _recommender models_ -- in this post, we'll examine building a recommender system on a popular open-source dataset using the [LightFM](https://making.lyst.com/lightfm/docs/home.html) package.
 In [part II](/pages/projects/recommender-part-2), we'll take that recommendation model and build production-grade model serving infrastructure around it.
+Example code for the both parts can be found on Github [here](https://github.com/jrwalk/recommender-demo).
 Let's dive in!
-
-<> TODO add github link
 
 ## The Data
 
@@ -20,11 +19,9 @@ We'll be using the MovieLens 25M dataset, a collation of twenty-five million mov
 In total, this comprises some 162,000 users rating 62,000 movies.
 While this is probably overkill (and MovieLens does provide smaller datasets) this still ends up being tractable even running locally on my laptop and provides a good picture for a production-scale recommender.
 
-Our data comes in CSV form, of the shape
+The GroupLens team publishes data in a CSV format -- in particular, we care about `movies.csv`:
 
 ```csv
-# movies.csv
-
 movieId,title,genres
 1,Toy Story (1995),Adventure|Animation|Children|Comedy|Fantasy
 2,Jumanji (1995),Adventure|Children|Fantasy
@@ -34,11 +31,9 @@ movieId,title,genres
 ...
 ```
 
-and
+and `ratings.csv`:
 
 ```csv
-# ratings.csv
-
 userId,movieId,rating,timestamp
 1,296,5.0,1147880044
 1,306,3.5,1147868817
@@ -48,7 +43,7 @@ userId,movieId,rating,timestamp
 ...
 ```
 
-In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database -- for the purposes of this demo, we'll assume we can access data in that form.
+In our [example code](https://github.com/jrwalk/recommender-demo), we have bootstrap & migration scripts for representing the movie data at rest in a database, along with some sensical transforms (e.g., snake-casing field names, and parsing movie genres into a postgres JSONB array column) -- for the purposes of this demo, we'll assume we can access data in that form.
 
 ## Collaborative Filtering Models
 
@@ -82,11 +77,11 @@ $$
 R \approx \hat{R} = UV^T
 $$
 
-where $$U$$ is of shape $$n_{users} \times d$$ and $$V$$ is of shape $$n_{items} \times d$$.
+where $$U$$ is of shape $$n_{users} \times d$$ and $$V$$ is of shape $$n_{items} \times d$$, for some comparatively small dimension $$d$$.
 In this scheme, the matrices $$U$$ and $$V$$ represent our users and items -- that is, each row of $$U$$ is a $$d$$-dimensional representation of a user, and each row of $$V$$ is a $$d$$-dimensional representation of an item.
 Ideally we want to minimize the deviation of our approximation $$\hat{R}$$ from the original $$R$$ such that as much information as possible is retained.
 
-We could do this analytically, e.g. by truncating the results of a singular-value decomposition, but in practice for many collaborative filtering datasets this would be computationally intractible.
+We could do this analytically, e.g. by truncating the results of a [singular-value decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition), but in practice for many collaborative filtering datasets this would be computationally intractible.
 Instead, we'll learn our representations from individual interactions $$r_{ij} \in R$$, via
 
 $$
@@ -101,7 +96,7 @@ $$
 \hat{r}_{ij} = f(\vec{u}_i \cdot \vec{v}_j + b_i + b_j)
 $$
 
-which is the form used in the [original LightFM paper [1]](https://arxiv.org/pdf/1507.08439.pdf).
+which is the form used in the original LightFM paper, ["Metadata Embeddings for User and Item Cold-start Recommendations"](https://arxiv.org/pdf/1507.08439.pdf) by Maciej Kula.
 Several functions are appropriate for $$f(\cdot)$$ here: simply using an identity function allows us to predict numerical ratings, while squashing the vector product through a sigmoid function maps to binary preferences.
 
 This has the added benefit of greatly streamlining training -- rather than needing to work with the entire matrix in memory, we only care about per-element loss $$L(r_{ij}, \hat{r}_{ij})$$, making the problem naturally suited to training via stochastic gradient descent.
@@ -115,7 +110,7 @@ In the explicit case, we could leverage high versus low ratings to teach the mod
 In the implicit case, however, we can't distinguish unexamined versus disliked items.
 Rather than treating unexamined items as having a zero rating (and therefore being forced to the bottom of the stack), we care about a somewhat more relaxed criterion -- that they only be ranked appropriately compared to known positive interactions.
 
-LightFM and other implicit feedback tools support two common approaches to this: [Bayesian Personalized Ranking (BPR) [2]](https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf) and [Weighted Approximate-Rank Pairwise (WARP) [3]](http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf) loss.
+LightFM supports two common approaches to this: [Bayesian Personalized Ranking (BPR)](https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf) and [Weighted Approximate-Rank Pairwise (WARP) loss](http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf).
 In both cases, rather than simply computing the loss for a (user, item) pair, we work with a triple: a user, a positive item, and a negative item (actually disliked, or merely unexamined).
 Our loss then centers on whether the model appropriately ranks the positive and negative item relative to each other.
 
@@ -142,9 +137,12 @@ First, we need to assemble our dataset:
 ```python
 from lightfm.data import Dataset
 
+# assuming we've got an open DB connection to our datastore
 users = conn.execute("select distinct(user_id) from ratings;")
 movies = conn.execute("select id from movies;")
-genres = conn.execute("select distinct(jsonb_array_elements(genres)) from movies;")
+genres = conn.execute(
+    "select distinct(jsonb_array_elements(genres)) from movies;"
+)
 
 dataset = Dataset()
 dataset.fit(users, movies, item_features=genres)
@@ -155,9 +153,15 @@ Contrary to the name, this isn't fitting a model: rather, all this builds is an 
 Next, we build our interactions:
 
 ```python
-top_rated = conn.execute("select user_id, movie_id from ratings where rating = 5.0;")
+top_rated = conn.execute(
+    "select user_id, movie_id from ratings where rating = 5.0;"
+)
 interactions, weights = dataset.build_interactions(top_rated)
 ```
+
+Note that we actually output two matrices here: while both correspond in size to our matrix $$R$$ (that is, it's $$n_{users} \times n_{items}$$), `interactions` stores only binary on/off states for each interaction $$r_{ij}$$, while `weights` stores a weight of the corresponding interaction, which can be either explicitly supplied to `build_interactions` or computed from repeated `(user_id, movie_id)` interactions.
+To recover the matrix $$R$$ with numerical ratings (e.g., when we care about numerical score, or want to use repeated interaction to indicate stronger preference), we simply multiply the two matrices element-wise.
+In this case, we actually only care about the binary state, so we can safely discard the `weights` matrix.
 
 ## Model Inference
 
@@ -280,11 +284,3 @@ def approximate_rank(
         for k, score in zip(ids, scores)
     ]
 ```
-
-### References
-
-[1] https://arxiv.org/pdf/1507.08439.pdf
-
-[2] https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf
-
-[3] http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf

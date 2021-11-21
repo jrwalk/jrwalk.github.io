@@ -20,7 +20,35 @@ We'll be using the MovieLens 25M dataset, a collation of twenty-five million mov
 In total, this comprises some 162,000 users rating 62,000 movies.
 While this is probably overkill (and MovieLens does provide smaller datasets) this still ends up being tractable even running locally on my laptop and provides a good picture for a production-scale recommender.
 
-In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database -- for the purposes of this demo, we can assume simply that the ratings can be accessed easily from a datastore (although the specifics of that storage will be important when we start working on serving our recommendations in [part II](/pages/projects/recommender-part-2)).
+Our data comes in CSV form, of the shape
+
+```csv
+# movies.csv
+
+movieId,title,genres
+1,Toy Story (1995),Adventure|Animation|Children|Comedy|Fantasy
+2,Jumanji (1995),Adventure|Children|Fantasy
+3,Grumpier Old Men (1995),Comedy|Romance
+4,Waiting to Exhale (1995),Comedy|Drama|Romance
+5,Father of the Bride Part II (1995),Comedy
+...
+```
+
+and
+
+```csv
+# ratings.csv
+
+userId,movieId,rating,timestamp
+1,296,5.0,1147880044
+1,306,3.5,1147868817
+1,307,5.0,1147868828
+1,665,5.0,1147878820
+1,899,3.5,1147868510
+...
+```
+
+In our example code, we have bootstrap & migration scripts for representing the movie data at rest in a database -- for the purposes of this demo, we'll assume we can access data in that form.
 
 ## Collaborative Filtering Models
 
@@ -80,11 +108,56 @@ This has the added benefit of greatly streamlining training -- rather than needi
 
 ### Ranking Loss Functions
 
-In the case of explicit feedback, where our prediction $$\hat{r}_{ij}$$ directly indicates a numerical score or rating, this behaves essentially like a regression problem -- we can learn our embedded representation to minimize an appropriate loss (e.g., mean-squared error)
+In the case of explicit feedback, where our prediction $$\hat{r}_{ij}$$ directly indicates a numerical score or rating, this behaves essentially like a regression problem -- we can learn our embedded representation to minimize an appropriate loss (e.g., mean-squared error), which is well-suited for learning by stochastic gradient descent or alternating least squares.
+
+Things get more interesting when we are dealing with implicit feedback, e.g., when we only have binary interaction (or lack thereof) rather than explicit ratings to predict.
+In the explicit case, we could leverage high versus low ratings to teach the model to distinguish preferences.
+In the implicit case, however, we can't distinguish unexamined versus disliked items.
+Rather than treating unexamined items as having a zero rating (and therefore being forced to the bottom of the stack), we care about a somewhat more relaxed criterion -- that they only be ranked appropriately compared to known positive interactions.
+
+LightFM and other implicit feedback tools support two common approaches to this: [Bayesian Personalized Ranking (BPR) [2]](https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf) and [Weighted Approximate-Rank Pairwise (WARP) [3]](http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf) loss.
+In both cases, rather than simply computing the loss for a (user, item) pair, we work with a triple: a user, a positive item, and a negative item (actually disliked, or merely unexamined).
+Our loss then centers on whether the model appropriately ranks the positive and negative item relative to each other.
+
+In BPR loss, we randomly sample a positive and negative sample, score both, and take the difference between the positive and negative samples' scores.
+This is then passed through a sigmoid function to squash the value onto $$(0, 1)$$, which is interpreted as the probability the user actually prefers the positive sample over the negative.
+This is then used as a loss to update the user and item representations via stochastic gradient descent.
+Conceptually, this loss scheme ends up optimizing for ROC-AUC in our ranking, since the receiver-operating characteristic is directly tied to a likelihood of ranking a randomly-selected positive sample over a random negative sample.
+
+In WARP loss, we begin similarly, by sampling a (user, positive item, negative item) triple at random.
+However, rather than a sigmoid loss on the relative scores, we use a hinge loss: we skip the update entirely if the positive and negative samples are correctly relatively ranked, and only update our weights in rank-violating cases.
+Moreover, if we rank a pair correctly, we draw another random negative sample until we find a violating case, for which we update our weights.
+This introduces a subtle shift in the optimization: rather than correctly ranking a randomly-selected positive sample versus a randomly selected negative, the algorithm tries to correctly rank against _any_ negative sample.
+This tends to optimize towards correctly ranking the top few examples rather than deeper in the stack, tending towards better precision-at-$$k$$ rather than AUC.
+It does, however, introduce a quirk to the training process -- while early epochs run relatively quickly, as the model trains it will need to sample more negative examples before finding a rank-violating pair, increasing training time (usually we set a maximum sample count as a model hyperparameter).
 
 ## Modeling with LightFM
 
 ### Sideloading Metadata
+
+### Building the model
+
+First, we need to assemble our dataset:
+
+```python
+from lightfm.data import Dataset
+
+users = conn.execute("select distinct(user_id) from ratings;")
+movies = conn.execute("select id from movies;")
+genres = conn.execute("select distinct(jsonb_array_elements(genres)) from movies;")
+
+dataset = Dataset()
+dataset.fit(users, movies, item_features=genres)
+```
+
+Contrary to the name, this isn't fitting a model: rather, all this builds is an internal mapping of users, items, and user/item features (movies + movie genre tags, in this case) to ordinal indices for the sparse matrix representation used by the model, so it just needs sequences of the unique IDs and discrete features.
+
+Next, we build our interactions:
+
+```python
+top_rated = conn.execute("select user_id, movie_id from ratings where rating = 5.0;")
+interactions, weights = dataset.build_interactions(top_rated)
+```
 
 ## Model Inference
 
@@ -208,4 +281,10 @@ def approximate_rank(
     ]
 ```
 
+### References
+
 [1] https://arxiv.org/pdf/1507.08439.pdf
+
+[2] https://arxiv.org/ftp/arxiv/papers/1205/1205.2618.pdf
+
+[3] http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf

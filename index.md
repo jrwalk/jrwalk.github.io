@@ -48,13 +48,13 @@ Python, Rust, Cython, C++, Bash, Javascript (Node, React)
 Tensorflow, Keras, PyTorch
 
 **Machine Learning & Statistics:**
-scikit-learn, XGBoost, H2O, PyMC3, Pomegranate, LightFM
+scikit-learn, XGBoost, LightFM, H2O, PyMC3, Pomegranate
 
 **Natural Language Processing:**
 FastText, SpaCy, NLTK, Gensim, CoreNLP
 
 **Data Technologies**
-Elasticsearch, SQL, Apache Kafka, Apache Hive, Vertica, AWS Athena
+Elasticsearch, SQL, Apache Kafka, Apache Hive, Snowflake, Vertica, AWS Athena
 
 **Data Processing & Pipelines:**
 Apache Airflow, Dask, Apache Spark, Pandas, Luigi
@@ -62,7 +62,7 @@ Apache Airflow, Dask, Apache Spark, Pandas, Luigi
 **Visualization & Dashboards:**
 Altair, Matplotlib, Seaborn, Bokeh, D3.js, Metabase, Superset
 
-**Hosting & Deployment:**
+**Serving & Deployment:**
 FastAPI, Flask, Docker, Kubernetes, AWS, Gitlab CI/CD, TeamCity
 
 **Experimental Control**

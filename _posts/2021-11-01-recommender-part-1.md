@@ -125,6 +125,7 @@ Moreover, if we rank a pair correctly, we draw another random negative sample un
 This introduces a subtle shift in the optimization: rather than correctly ranking a randomly-selected positive sample versus a randomly selected negative, the algorithm tries to correctly rank against _any_ negative sample.
 This tends to optimize towards correctly ranking the top few examples rather than deeper in the stack, tending towards better precision-at-$$k$$ rather than AUC.
 It does, however, introduce a quirk to the training process -- while early epochs run relatively quickly, as the model trains it will need to sample more negative examples before finding a rank-violating pair, increasing training time (usually we set a maximum sample count as a model hyperparameter).
+The algorithm also incorporates this feedback into its learning rate, treating an elevated number of negative samples before finding a rank-violating pair as indicative that the model is near-optimum, and slowing the learning rate accordingly.
 
 ## Modeling with LightFM
 
@@ -132,7 +133,7 @@ We're now ready to begin tackling generating recommendations from our MovieLens 
 Although our data includes explicit ratings (on a 5-star scale, in half-star increments), user ratings are notoriously fickle -- even accounting for per-user and per-movie bias, the star rating can be a noisy & unreliable representation of a user's preference.
 However, we can easily create an implicit feedback scenario from the explicit ratings, by simply treating the users' 5-star ratings as a positive signal and anything else as negative.
 We'll train our model using WARP loss, to optimize specifically for precision-at-$$k$$, aiming to get the top few rankings correct.
-Combined with our restriction to 5-star interactions, this should learn to generate a few high-quality recommendations based on the users' most highly-preferred movies.
+Combined with our restriction to 5-star interactions, this should learn to generate a few high-quality recommendations based on the users' most highly-preferred movies, discarding the vast majority of the 62,000+ movies in the dataset as irrelevant.
 
 ### Sideloading Metadata
 

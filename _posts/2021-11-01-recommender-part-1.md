@@ -53,11 +53,11 @@ Recommender models do end up predicting a continuous score, generally intepreted
 
 To start, we envision our _interaction matrix_, denoted $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input -- in this case, the items are movies).
 Each element $$r_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
-This is our first branch point in designing recommenders:
+The naure of this interaction is our first branch point in designing recommenders:
 
-(1) _explicit_ interaction, like a user providing a 5-star rating for an item based on their preferences
+(1) _explicit_ feedback, like a user providing a 5-star rating for an item based on their preferences
 
-(2) _implicit_ interaction, where we infer a user's preference -- for example, modeling click-throughs or skips as positive/negative interactions, and treating lack of interaction as neutral or negative
+(2) _implicit_ feedback, where we infer a user's preference -- for example, modeling click-throughs or skips as positive/negative interactions, and treating lack of interaction as neutral or negative
 
 We can think of each row of the matrix as a $$n_{items}$$-sized vector decribing a single user; likewise, each column is a $$n_{users}$$-sized vector describing each item (movie, in this case).
 Given vector representations for users and items, then, we can work in terms of similarity (via vector-based distance metrics), which gets at the core of collaborative filtering -- similar users like the same items, and similar items are liked by the same users.
@@ -78,7 +78,7 @@ R \approx \hat{R} = UV^T
 $$
 
 where $$U$$ is of shape $$n_{users} \times d$$ and $$V$$ is of shape $$n_{items} \times d$$, for some comparatively small dimension $$d$$.
-In this scheme, the matrices $$U$$ and $$V$$ represent our users and items -- that is, each row of $$U$$ is a $$d$$-dimensional representation of a user, and each row of $$V$$ is a $$d$$-dimensional representation of an item.
+In this scheme, the matrices $$U$$ and $$V$$ represent our users and items -- that is, each row of $$U$$ is a $$d$$-dimensional embedded representation of a user, and each row of $$V$$ is a $$d$$-dimensional embedded representation of an item.
 Ideally we want to minimize the deviation of our approximation $$\hat{R}$$ from the original $$R$$ such that as much information as possible is retained.
 
 We could do this analytically, e.g. by truncating the results of a [singular-value decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition), but in practice for many collaborative filtering datasets this would be computationally intractible.
@@ -99,11 +99,11 @@ $$
 which is the form used in the original LightFM paper, ["Metadata Embeddings for User and Item Cold-start Recommendations"](https://arxiv.org/pdf/1507.08439.pdf) by Maciej Kula.
 Several functions are appropriate for $$f(\cdot)$$ here: simply using an identity function allows us to predict numerical ratings, while squashing the vector product through a sigmoid function maps to binary preferences.
 
-This has the added benefit of greatly streamlining training -- rather than needing to work with the entire matrix in memory, we only care about per-element loss $$L(r_{ij}, \hat{r}_{ij})$$, making the problem naturally suited to training via stochastic gradient descent.
+This has the added benefit of greatly streamlining training -- rather than needing to work with the entire matrix in memory, we only care about per-element loss $$L(r_{ij}, \hat{r}_{ij})$$, making the problem naturally suited to training via [stochastic gradient descent](https://en.wikipedia.org/wiki/Stochastic_gradient_descent).
 
 ### Ranking Loss Functions
 
-In the case of explicit feedback, where our prediction $$\hat{r}_{ij}$$ directly indicates a numerical score or rating, this behaves essentially like a regression problem -- we can learn our embedded representation to minimize an appropriate loss (e.g., mean-squared error), which is well-suited for learning by stochastic gradient descent or alternating least squares.
+In the case of explicit feedback, where our prediction $$\hat{r}_{ij}$$ directly indicates a numerical score or rating, this behaves essentially like a regression problem -- we can learn our embedded representation to minimize an appropriate loss (e.g., mean-squared error), which is well-suited for learning by SGD or alternating least squares.
 
 Things get more interesting when we are dealing with implicit feedback, e.g., when we only have binary interaction (or lack thereof) rather than explicit ratings to predict.
 In the explicit case, we could leverage high versus low ratings to teach the model to distinguish preferences.
@@ -114,10 +114,10 @@ LightFM supports two common approaches to this: [Bayesian Personalized Ranking (
 In both cases, rather than simply computing the loss for a (user, item) pair, we work with a triple: a user, a positive item, and a negative item (actually disliked, or merely unexamined).
 Our loss then centers on whether the model appropriately ranks the positive and negative item relative to each other.
 
-In BPR loss, we randomly sample a positive and negative sample, score both, and take the difference between the positive and negative samples' scores.
+In BPR loss, we randomly draw a positive and negative sample, score both, and take the difference between the positive and negative samples' scores.
 This is then passed through a sigmoid function to squash the value onto $$(0, 1)$$, which is interpreted as the probability the user actually prefers the positive sample over the negative.
 This is then used as a loss to update the user and item representations via stochastic gradient descent.
-Conceptually, this loss scheme ends up optimizing for ROC-AUC in our ranking, since the receiver-operating characteristic is directly tied to a likelihood of ranking a randomly-selected positive sample over a random negative sample.
+Conceptually, this loss scheme ends up optimizing for [ROC-AUC](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) in our ranking, since the receiver-operating characteristic is directly tied to a likelihood of ranking a randomly-selected positive sample over a random negative sample.
 
 In WARP loss, we begin similarly, by sampling a (user, positive item, negative item) triple at random.
 However, rather than a sigmoid loss on the relative scores, we use a hinge loss: we skip the update entirely if the positive and negative samples are correctly relatively ranked, and only update our weights in rank-violating cases.
@@ -127,6 +127,12 @@ This tends to optimize towards correctly ranking the top few examples rather tha
 It does, however, introduce a quirk to the training process -- while early epochs run relatively quickly, as the model trains it will need to sample more negative examples before finding a rank-violating pair, increasing training time (usually we set a maximum sample count as a model hyperparameter).
 
 ## Modeling with LightFM
+
+We're now ready to begin tackling generating recommendations from our MovieLens data.
+Although our data includes explicit ratings (on a 5-star scale, in half-star increments), user ratings are notoriously fickle -- even accounting for per-user and per-movie bias, the star rating can be a noisy & unreliable representation of a user's preference.
+However, we can easily create an implicit feedback scenario from the explicit ratings, by simply treating the users' 5-star ratings as a positive signal and anything else as negative.
+We'll train our model using WARP loss, to optimize specifically for precision-at-$$k$$, aiming to get the top few rankings correct.
+Combined with our restriction to 5-star interactions, this should learn to generate a few high-quality recommendations based on the users' most highly-preferred movies.
 
 ### Sideloading Metadata
 
@@ -153,10 +159,10 @@ Contrary to the name, this isn't fitting a model: rather, all this builds is an 
 Next, we build our interactions:
 
 ```python
-top_rated = conn.execute(
+five_star_ratings = conn.execute(
     "select user_id, movie_id from ratings where rating = 5.0;"
 )
-interactions, weights = dataset.build_interactions(top_rated)
+interactions, weights = dataset.build_interactions(five_star_ratings)
 ```
 
 Note that we actually output two matrices here: while both correspond in size to our matrix $$R$$ (that is, it's $$n_{users} \times n_{items}$$), `interactions` stores only binary on/off states for each interaction $$r_{ij}$$, while `weights` stores a weight of the corresponding interaction, which can be either explicitly supplied to `build_interactions` or computed from repeated `(user_id, movie_id)` interactions.

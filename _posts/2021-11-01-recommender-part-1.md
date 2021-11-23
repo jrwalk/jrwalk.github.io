@@ -47,13 +47,13 @@ In our [example code](https://github.com/jrwalk/recommender-demo), we have boots
 
 ## Collaborative Filtering Models
 
-Collaborative-filtering models are a bit of an odd duck, at least compared to the model types a beginner machine-learning practitioner might encounter.
+Collaborative-filtering models are a bit of an odd duck, at least compared to the forms a beginner machine-learning practitioner might encounter.
 Rather than directly predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
 Recommender models do end up predicting a continuous score, generally intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
 
 To start, we envision our _interaction matrix_, denoted $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input -- in this case, the items are movies).
 Each element $$r_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.
-The naure of this interaction is our first branch point in designing recommenders:
+The nature of this interaction is our first branch point in designing recommenders:
 
 (1) _explicit_ feedback, like a user providing a 5-star rating for an item based on their preferences
 
@@ -61,7 +61,7 @@ The naure of this interaction is our first branch point in designing recommender
 
 We can think of each row of the matrix as a $$n_{items}$$-sized vector decribing a single user; likewise, each column is a $$n_{users}$$-sized vector describing each item (movie, in this case).
 Given vector representations for users and items, then, we can work in terms of similarity (via vector-based distance metrics), which gets at the core of collaborative filtering -- similar users like the same items, and similar items are liked by the same users.
-Our recommendation task, then, is to surface the best new items based on a similarity metric: that is, a user is likely to like movies similar to ones they've already enjoyed, or ones that were liked by other users similar to them.
+Our recommendation task, then, is to surface the best new items based on a similarity metric: that is, a user is likely to prefer movies similar to ones they've already enjoyed, or ones that were liked by other users similar to them.
 
 However, we've run into a problem here: in any realistic dataset, any given user will only interact with a tiny fraction of the available inventory of items.
 This means that our interaction matrix $$R$$ is extremely sparse (less than a percent non-null entries, in this case), so directly computing vector similarity for our user and item representations is fraught.
@@ -127,15 +127,32 @@ This tends to optimize towards correctly ranking the top few examples rather tha
 It does, however, introduce a quirk to the training process -- while early epochs run relatively quickly, as the model trains it will need to sample more negative examples before finding a rank-violating pair, increasing training time (usually we set a maximum sample count as a model hyperparameter).
 The algorithm also incorporates this feedback into its learning rate, treating an elevated number of negative samples before finding a rank-violating pair as indicative that the model is near-optimum, and slowing the learning rate accordingly.
 
+### Sideloading Metadata
+
+Before we begin, there is one more factor to consider.
+The Achilles' heel of any recommender system is the "cold-start problem" -- that is, how to generate recommendations for users/items that have few or no interactions.
+A purely collaborative-filtering approach, like we described above, is unable to infer meaningful scores in this case.
+Content-based recommenders, which try to predict user preferences based on explicit features (more like a conventional regression model) are able to generate predictions from known metadata, e.g. item tags, but these cannot leverage the collaborative wisdom of our interaction data (which often can be more informative and reliable than users' stated preferences!).
+
+LightFM implements a [clever hybrid approach](https://arxiv.org/pdf/1507.08439.pdf) for sideloading user/item features along with the main collaborative-filtering model, boosting performance for items with little interaction data.
+Consider a user or item as having some number of discrete features (i.e., a metadata tag) associated with them.
+When a user interacts with an item, we record them as also having interacted with all that item's features, and vice versa for user features.
+In the sparse view, this is analogous concatenating an $$n_{user} \times n_{item-feature}$$ or $$n_{user-feature} \times n_{item}$$ interaction matrix to the primary data.
+These features then have their own learned dense representations in the model, with the final embedded representation of a user or item being the linear combination of its own vector and those of its features.
+Alternately, we could simply consider each user/item as having a self-referential "identity" feature as well as the sideloaded metadata, and treat its representation as the average of its feature vectors.
+In the case where no user or item features are present (i.e., each is represented only by its identity feature) then the problem reduces to traditional collaborative filtering.
+
+This has the effect of allowing users/items with poor presence in the interaction data to bootstrap their representation based on interactions of other users/items with shared features.
+Of course, poor or uninformative features can end up muddling the learned representation of items with a large number of interactions, and a uneven distribution of tags can similarly add noise to the model rather than improving it.
+However, in cases with fairly uniform feature coverage, it can improve model performance, particularly for the underrepresented "long tail" of user-item interactions.
+
 ## Modeling with LightFM
 
 We're now ready to begin tackling generating recommendations from our MovieLens data.
 Although our data includes explicit ratings (on a 5-star scale, in half-star increments), user ratings are notoriously fickle -- even accounting for per-user and per-movie bias, the star rating can be a noisy & unreliable representation of a user's preference.
-However, we can easily create an implicit feedback scenario from the explicit ratings, by simply treating the users' 5-star ratings as a positive signal and anything else as negative.
+However, we can easily smooth our rating data into something that looks more like the implicit case, by simply treating the users' 5-star ratings as a positive signal and anything else as negative.
 We'll train our model using WARP loss, to optimize specifically for precision-at-$$k$$, aiming to get the top few rankings correct.
 Combined with our restriction to 5-star interactions, this should learn to generate a few high-quality recommendations based on the users' most highly-preferred movies, discarding the vast majority of the 62,000+ movies in the dataset as irrelevant.
-
-### Sideloading Metadata
 
 ### Building the model
 
@@ -155,7 +172,7 @@ dataset = Dataset()
 dataset.fit(users, movies, item_features=genres)
 ```
 
-Contrary to the name, this isn't fitting a model: rather, all this builds is an internal mapping of users, items, and user/item features (movies + movie genre tags, in this case) to ordinal indices for the sparse matrix representation used by the model, so it just needs sequences of the unique IDs and discrete features.
+Contrary to the name, this isn't fitting a model: rather, all this builds is an internal mapping of users, items, and user/item features (movies + twenty genre tags, in this case) to ordinal indices for the sparse matrix representation used by the model, so it just needs sequences of the unique IDs and discrete features.
 
 Next, we build our interactions:
 
@@ -168,7 +185,7 @@ interactions, weights = dataset.build_interactions(five_star_ratings)
 
 Note that we actually output two matrices here: while both correspond in size to our matrix $$R$$ (that is, it's $$n_{users} \times n_{items}$$), `interactions` stores only binary on/off states for each interaction $$r_{ij}$$, while `weights` stores a weight of the corresponding interaction, which can be either explicitly supplied to `build_interactions` or computed from repeated `(user_id, movie_id)` interactions.
 To recover the matrix $$R$$ with numerical ratings (e.g., when we care about numerical score, or want to use repeated interaction to indicate stronger preference), we simply multiply the two matrices element-wise.
-In this case, we actually only care about the binary state, so we can safely discard the `weights` matrix.
+In this case, we actually only care about the binary state (and each user only rates a given movie once), so we can safely discard the `weights` matrix.
 Examining the interactions matrix, we see
 
 ```python
@@ -209,6 +226,14 @@ Examining this matrix, we see
 Strictly, this is a selection matrix for item features: without any sideloaded features, this would simply be a $$62423 \times 62423$$ identity matrix.
 The additional 20 columns contain indicators for the 20 distinct genre tags that can be appended to a movie, such that the vector representation of a movie is composed of a linear combination of its self-referential "identity" feature and its genre vectors, all of which are learned during training time.
 
+As discussed above, sideloaded features are most useful in the "long tail" of users/items with poor representation in the interaction data.
+In the case of our MovieLens data, we're dealing with just such a distribution:
+
+![01](/images/projects/recommender/rating_counts_log.svg)
+
+The top 1000 movies (out of 62,000+) by rating count comprise about 60% of the total rating count, while the top 4000 comprise ~90%.
+Since we have fairly uniform coverage of genre tags for these movies, I'd expect we see some performance gain particularly in the tail.
+
 We're now ready to train our model:
 
 ```python
@@ -218,13 +243,15 @@ num_threads = ...  # however many cores you want to devote to it!
 
 model = LightFM(loss="warp", no_components=64)
 model.fit(
-    train, item_features=item_features, epochs=50, num_threads=num_threads
+    train, item_features=item_features, epochs=250, num_threads=num_threads
 )
 ```
 
-Alternately, we could warm-start the training on an existing method with the `fit_partial` method.
-As the scoring involves individual samples in stochastic gradient descent, training is well-suited to parallelization.
-Given a trained model, we can evaluate the model:
+Alternately, we could warm-start the training on an existing method with the `fit_partial` method, which is useful for checkpointing during training.
+Note, however, that the scoring functions are comparatively slow, as they require computing and then averaging ranking metrics per-user across the entirety of the movie catalog.
+Model training is parallelized via [HOGWILD SGD](https://arxiv.org/abs/1106.5730), meaning we reap substantial benefits from throwing more CPU cores at our training process.
+
+LightFM provides built-in scoring functions for common ranking metrics:
 
 ```python
 from lightfm.evaluation import precision_at_k, auc_score

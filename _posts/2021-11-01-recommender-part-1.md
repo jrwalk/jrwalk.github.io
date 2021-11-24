@@ -142,7 +142,9 @@ These features then have their own learned dense representations in the model, w
 Alternately, we could simply consider each user/item as having a self-referential "identity" feature as well as the sideloaded metadata, and treat its representation as the average of its feature vectors.
 In the case where no user or item features are present (i.e., each is represented only by its identity feature) then the problem reduces to traditional collaborative filtering.
 
+
 This has the effect of allowing users/items with poor presence in the interaction data to bootstrap their representation based on interactions of other users/items with shared features.
+Again, we can draw a parallel to NLP problems -- this approach is conceptually similar to the subword embeddings used by [FastText](https://fasttext.cc/), which represents words as the average of the token embedding and embeddings of its constituent substrings, compensating for rare or out-of-vocabulary words by building nontrivial representations from the substring embeddings.
 Of course, poor or uninformative features can end up muddling the learned representation of items with a large number of interactions, and a uneven distribution of tags can similarly add noise to the model rather than improving it.
 However, in cases with fairly uniform feature coverage, it can improve model performance, particularly for the underrepresented "long tail" of user-item interactions.
 
@@ -189,7 +191,6 @@ In this case, we actually only care about the binary state (and each user only r
 Examining the interactions matrix, we see
 
 ```python
->> print(interactions)
 <162541x62423 sparse matrix of type '<class 'numpy.int32'>'
 	with 3612474 stored elements in COOrdinate format>
 ```
@@ -233,6 +234,7 @@ In the case of our MovieLens data, we're dealing with just such a distribution:
 
 The top 1000 movies (out of 62,000+) by rating count comprise about 60% of the total rating count, while the top 4000 comprise ~90%.
 Since we have fairly uniform coverage of genre tags for these movies, I'd expect we see some performance gain particularly in the tail.
+Intuitively, the feature embeddings of genre tags will tend to drag movies towards their genre centroids in the embedding space, such that users with strong genre preference will still be relatively close even to movies with poor representation in the interaction data.
 
 We're now ready to train our model:
 
@@ -275,9 +277,55 @@ print(f"training AUC: {train_auc:.3f}")
 print(f"testing AUC: {test_auc:.3f}")
 ```
 
+yielding
+
+```python
+training p@5: 0.352
+testing p@5: 0.070
+training AUC: 0.999
+testing AUC: 0.991
+```
+
+As expected for our sparse data, the sheer number of negative samples compared to positive ensures even a mediocre model will hit a high AUC.
+Similarly, for how few positive samples we have, this is an acceptable precision at a cutoff of 5 -- notably, we gain about 0.015 over a pure CF model by including our genre data.
+
+Outside the true positives, the recommendation quality seems fairly good.
+Even for a user with only two ratings, we find both true positives (indicated by `**`) in the top 10:
+
+```csv
+*Secret Garden, The (1993)*
+Harriet the Spy (1996)
+Matilda (1996)
+Babe (1995)
+Little Princess, A (1995)
+Madeline (1998)
+*...And God Spoke (1993)*
+Trouble with Angels, The (1966)
+Pollyanna (1960)
+It's a Very Merry Muppet Christmas Movie (2002)
+```
+
+while the others are consistently similar children's movies.
+With more ratings, we still see sensical results:
+
+```csv
+*Lord of the Rings: The Two Towers, The (2002)*
+Lord of the Rings: The Fellowship of the Ring, The (2001)
+*Inception (2010)*
+Matrix, The (1999)
+*Shawshank Redemption, The (1994)*
+Lord of the Rings: The Return of the King, The (2003)
+*Fight Club (1999)*
+*Memento (2000)*
+*Forrest Gump (1994)*
+*Green Mile, The (1999)*
+```
+
+The results are either true positives, or pass gut-check (e.g., enjoying all three films of the _Lord of the Rings_ trilogy despite only having rated one).
+
 ## Model Inference
 
-To generate predictions from our model, we don't, in the strictest sense, _need_ to keep the modeling object (LightFM or otherwise) around - in fact, it's often better that we don't!
+To generate predictions from our model, we don't, in the strictest sense, _need_ to keep the modeling object around (though LightFM provides a `predict` method that will score user-item combinations easily) - in fact, it's often better that we don't!
 The model learns representations of users and movies embedded in a low-dimensional space, in which distance (dot-product, in this case) corresponds to the model's score.
 Conveniently, LightFM provides an easy way to extract these embeddings (including any sideloaded metadata):
 

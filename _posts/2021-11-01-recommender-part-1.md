@@ -448,3 +448,15 @@ def approximate_rank(
         for k, score in zip(ids, scores)
     ]
 ```
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-1.svg" />
+</p>
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-2.svg" />
+</p>
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-3.svg" />
+</p>

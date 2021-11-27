@@ -15,7 +15,7 @@ Let's dive in!
 
 ## The Data
 
-We'll be using the MovieLens 25M dataset, a collation of twenty-five million movie ratings on a five-star scale collated by the GroupLens team at University of Minnesota, plus genre tags for every reviewed movie.
+We'll be using the [MovieLens 25M](https://grouplens.org/datasets/movielens/) dataset, a collation of twenty-five million movie ratings on a five-star scale collated by the GroupLens team at University of Minnesota, plus genre tags for every reviewed movie.
 In total, this comprises some 162,000 users rating 62,000 movies.
 While this is probably overkill (and MovieLens does provide smaller datasets) this still ends up being tractable even running locally on my laptop and provides a good picture for a production-scale recommender.
 
@@ -230,7 +230,10 @@ The additional 20 columns contain indicators for the 20 distinct genre tags that
 As discussed above, sideloaded features are most useful in the "long tail" of users/items with poor representation in the interaction data.
 In the case of our MovieLens data, we're dealing with just such a distribution:
 
-![01](/images/projects/recommender/rating_counts_log.svg)
+<p align="center">
+  <img src="/images/projects/recommender/rating_counts_log.svg" />
+</p>
+
 
 The top 1000 movies (out of 62,000+) by rating count comprise about 60% of the total rating count, while the top 4000 comprise ~90%.
 Since we have fairly uniform coverage of genre tags for these movies, I'd expect we see some performance gain particularly in the tail.
@@ -287,7 +290,8 @@ testing AUC: 0.991
 ```
 
 As expected for our sparse data, the sheer number of negative samples compared to positive ensures even a mediocre model will hit a high AUC.
-Similarly, for how few positive samples we have, this is an acceptable precision at a cutoff of 5 -- notably, we gain about 0.015 over a pure CF model by including our genre data.
+Similarly, for how few positive samples we have, this is an acceptable precision at a cutoff of 5.
+Notably, we see a respectable gain in precision over a pure CF model by including our genre data -- 5.3% without sideloaded metadata, compared to 7.0% with the metadata, although interestingly the training precision was substantially higher .
 
 Outside the true positives, the recommendation quality seems fairly good.
 Even for a user with only two ratings, we find both true positives (indicated by `**`) in the top 10:

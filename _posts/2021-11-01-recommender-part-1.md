@@ -362,16 +362,20 @@ Where we've gone ahead and stacked in the bias vectors to satisfy the dot-produc
 These `(n_users, embedding_dim+2)` and `(n_movies, embedding_dim+2)`-sized matrices include all the information we need to perform inference for known users and movies.
 Actually, from this point forward we've essentially abstracted away the details of the process by which we generated these embeddings - from a model-serving standpoint we only need to know that we have embeddings trained for a given dimension and distance metric.
 
+Since we'll be accessing the user and movie matrices by ordinal index, we also need a lookup table to map those indices to the user and movie IDs in our actual data -- ortunately, we can easily extract this from the `lightfm.data.Dataset` object by
+
+```python
+# discard user feature mapping, as we didn't use any
+user_lookup, _, movie_lookup, movie_feature_lookup = dataset.mapping()
+```
+
+since we'll be accessing the user and movie matrices by ordinal index, we need a lookup table to map those indices to the user and movie IDs in our actual data -- fortunately, we can easily extract this from the `lightfm.data.Dataset` object.
+
 For convenience in the following, suppose we have
 
 ```python
 Recommendation = tuple[int, float]
-
-user_lookup = ...      # lookup of ordinal index to user ID
-movie_lookup = ...     # lookup of ordinal index to movie ID
 ```
-
-since we'll be accessing the user and movie matrices by ordinal index, we need a lookup table to map those indices to the user and movie IDs in our actual data.
 
 ### The Naive Approach: Sorted Scores
 
@@ -464,11 +468,30 @@ We do, however, need to account for errors introduced by the splitting boundarie
 At index time, we can correct for errors by building a forest of multiple trees with independent splits, and taking the ensemble vote of their results as the candidate set to avoid rejections due to a single bad split -- however, this inflates the size of the index.
 At query time, annoy will also inspect neighboring shards in the trees, rather than just the final node, to generate candidates -- this is available as a request parameter, higher values of which will result in longer query times but more accurate results.
 
+In code, building an annoy index is straightforward:
+
 ```python
-index = annoy.AnnoyIndex(embedding_dim, "dot")
+index = annoy.AnnoyIndex(movie_embeddings.shape[1], "dot")
 for i, vector in enumerate(movie_embeddings):
     index.add_item(i, vector)
+
+index.build(num_trees, n_jobs=n_threads)
+index.save("/path/to/index.ann")
 ```
+
+where we specify an index expecting embeddings of the correct dimension, and using the a dot-product metric to match the expected distance function from LightFM.
+We then build the index with our selected number of trees, which can be done in parallel -- this should be as large as we can reasonably accept for disk/memory requirements, so requires some manual tuning.
+I've had good luck with ~100 trees in the index.
+Saving then writes this to a memory-mapped file on disk, which can be passed around to different worker processes and loaded by simply calling
+
+```python
+# must match what we created it with!
+index = annoy.AnnoyIndex(embedding_dim, "dot")
+index.load("/path/to/index.ann", prefault=False)
+```
+
+Note that, by default, the index will lazy-load by pages into memory as needed, but setting `prefault=True` will load the entire index.
+The index provides nearest-neighbor lookup by index (for items already in the index) or by vector (for an arbitrary query embedding), which we can use in a similar manner to our exact rank functions above:
 
 ```python
 def approximate_rank(
@@ -477,10 +500,17 @@ def approximate_rank(
     e = user_embeddings[user_index, :]
 
     ids, scores = index.get_nns_by_vector(
-        e, cutoff, include_distances=True
+        e, cutoff, include_distances=True,
     )
     return [
         (movie_lookup[k], score)
         for k, score in zip(ids, scores)
     ]
 ```
+
+On my machine, this returns nearest neighbors in sub-millisecond times, even hitting below one hundred microseconds for smaller queries, while still returning reasonable results for its recommendations.
+
+## Next Steps
+
+With that, we have a good solution for quickly generating recommendations from our model -- we can generate and store embeddings for our users and movies, as well as a lookup table of user/movie IDs to their ordinal indices in the embeddings (provided by the `lightfm.data.Dataset` object via its `mappings` method), and build an approximate-nearest-neighbors index in Annoy of the movie embeddings.
+With these artifacts, we're ready to go to the next step: [building the serving infrastructure for a recommender API](/pages/projects/recommender-part-2).

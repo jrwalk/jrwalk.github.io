@@ -425,14 +425,50 @@ This is good, but we can do better!
 ### Approximate Nearest Neighbors
 
 In practice, we should be willing to sacrifice a little bit of precision to gain inference speed for our recommendations - after all, we likely won't take much of a hit if we transpose a few results in the top $$k$$, but a system that can't keep up with request volume could represent a much greater loss.
+This is the realm of _approximate nearest-neighbor search_: methods that sacrifice exactly-correct nearest neighbor retrieval (though they're often pretty close!) for significantly faster search times.
+Generally, these methods function by reducing the search into a two-step process: a coarse search that can rapidly reduce the search space to comparatively few candidates, and a refinement step that then finds the best-scoring candidates from within the reduced set (our partitioning method above also follows this scheme -- however, ANN methods can execute the coarse step in sub-linear time).
+
+A number of efficient implementations exist, using various approaches for the coarse search step, including [nmslib](https://github.com/nmslib/nmslib) for [navigable-small-world graphs](https://arxiv.org/abs/1603.09320), Facebook's [FAISS](https://github.com/facebookresearch/faiss), and Spotify's [annoy](https://github.com/spotify/annoy).
+I'm particularly fond of annoy, for several reasons -- it's fast and accurate (though HNSW graphs are the current state-of-the-art for retrieval metrics, e.g. precision or recall at $$k$$), but it also makes a machine-learning engineer's life easier!
+Annoy indices are written simply as memory-mapped static files, making them trivial to load into (or share across) processes, and even enabling lazy-loading components of the index as needed from disk on machines with constrained memory.
+This makes annoy indices remarkably simple to work with in the context of scalable model-serving APIs, whereas something like nmslib requires specialized instances provisioned with significant compute resources.
+
+To understand how annoy approaches coarse search, let's consider points in a $$d$$-dimensional embedding space (for the purposes of visualization, we'll create a toy 2D space):
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-1.svg" />
+</p>
+
+Next, draw a hyperplane through the space at random.
+It is a trivial vector operation to establish which side of the hyperplane each point lies on:
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-2.svg" />
+</p>
+
+At this point, we've essentially built an extremely simple hashing function: we can map an arbitrary point in a $$d$$-dimensional space to a single bit indicating the sides of the hyperplane.
+By ordinary hash function standards, this isn't particularly helpful, as we have a huge number of hash collisions.
+However, those collisions have one useful property: the likelihood of collision between two points is dependant on their proximity, which we term [locality-sensitive hashing](https://en.wikipedia.org/wiki/Locality-sensitive_hashing).
+
+Next, take the two subspaces defined by our hyperplane, and subdivide them with two further random hyperplanes (in annoy's case, we specifically select planes by splitting evenly between two randomly selected points in the dataset, to avoid particularly pathological splits):
+
+<p align="center">
+  <img src="/images/projects/recommender/annoy-3.svg" />
+</p>
+
+By recursively splitting our space in this manner, we can create a set of shards, each of which contains points that are comparatively close (by our chosen distance metric).
+Each of the splits is stored as a node within a binary search tree -- for a new point, we simply traverse the tree by evaluating the point against that node's hyperplane and taking the appropriate branch.
+Thus, we can match an embedding (the "query" point) to a shard containing good candidates for nearest-neighbors, with the number of computations determined by the splitting depth of the tree, rather than the total number of points, allowing us to execute the coarse search step in only a handful of computations.
+
+We do, however, need to account for errors introduced by the splitting boundaries, e.g. when a query point lies very near the split such that a large number of valid results in the neighboring shard would be rejected.
+At index time, we can correct for errors by building a forest of multiple trees with independent splits, and taking the ensemble vote of their results as the candidate set to avoid rejections due to a single bad split -- however, this inflates the size of the index.
+At query time, annoy will also inspect neighboring shards in the trees, rather than just the final node, to generate candidates -- this is available as a request parameter, higher values of which will result in longer query times but more accurate results.
 
 ```python
 index = annoy.AnnoyIndex(embedding_dim, "dot")
 for i, vector in enumerate(movie_embeddings):
     index.add_item(i, vector)
 ```
-
-
 
 ```python
 def approximate_rank(
@@ -448,15 +484,3 @@ def approximate_rank(
         for k, score in zip(ids, scores)
     ]
 ```
-
-<p align="center">
-  <img src="/images/projects/recommender/annoy-1.svg" />
-</p>
-
-<p align="center">
-  <img src="/images/projects/recommender/annoy-2.svg" />
-</p>
-
-<p align="center">
-  <img src="/images/projects/recommender/annoy-3.svg" />
-</p>

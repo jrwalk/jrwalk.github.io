@@ -48,8 +48,8 @@ In our [example code](https://github.com/jrwalk/recommender-demo), we have boots
 ## Collaborative Filtering Models
 
 Collaborative-filtering models are a bit of an odd duck, at least compared to the forms a beginner machine-learning practitioner might encounter.
-Rather than directly predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
-Recommender models do end up predicting a continuous score, generally intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
+Rather than simply predicting a response variable (either continuous for a regression problem or discrete for classification), we're concerned with generating a ranking - that is, given a user and a set of items, we want to assemble the items in that user's predicted preference order.
+Recommender models do end up predicting a score, which (depending on the input data) can be intepreted as a similarity metric or distance, but the actual value of this score isn't necessarily as important as whether the scores for different items are correctly ordered relative to each other.
 
 To start, we envision our _interaction matrix_, denoted $$R$$: a large matrix of shape $$n_{users} \times n_{items}$$ containing our raw interaction data (here we use "item" to refer generically to that half of the recommender's input -- in this case, the items are movies).
 Each element $$r_{ij}$$ corresponds to the interaction of the $$i$$'th user with the $$j$$'th item.

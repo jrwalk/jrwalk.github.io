@@ -145,6 +145,7 @@ In the case where no user or item features are present (i.e., each is represente
 
 This has the effect of allowing users/items with poor presence in the interaction data to bootstrap their representation based on interactions of other users/items with shared features.
 Again, we can draw a parallel to NLP problems -- this approach is conceptually similar to the subword embeddings used by [FastText](https://fasttext.cc/), which represents words as the average of the token embedding and embeddings of its constituent substrings, compensating for rare or out-of-vocabulary words by building nontrivial representations from the substring embeddings.
+
 Of course, poor or uninformative features can end up muddling the learned representation of items with a large number of interactions, and a uneven distribution of tags can similarly add noise to the model rather than improving it.
 However, in cases with fairly uniform feature coverage, it can improve model performance, particularly for the underrepresented "long tail" of user-item interactions.
 
@@ -202,7 +203,9 @@ For validation purposes, we can split this into a training and test set:
 ```python
 from lightfm.cross_validation import random_train_test_split
 
-train, test = random_train_test_split(interactions, test_percentage=0.2, random_state=42)
+train, test = random_train_test_split(
+    interactions, test_percentage=0.2, random_state=42
+)
 ```
 
 Each of these interaction matrices is of the same size as our original: rather than splitting users or movies out, we randomly select individual interactions to remove for the test set, such that the model is trained on a masked subset of user/item interactions.
@@ -291,7 +294,7 @@ testing AUC: 0.991
 
 As expected for our sparse data, the sheer number of negative samples compared to positive ensures even a mediocre model will hit a high AUC.
 Similarly, for how few positive samples we have, this is an acceptable precision at a cutoff of 5.
-Notably, we see a respectable gain in precision over a pure CF model by including our genre data -- 5.3% without sideloaded metadata, compared to 7.0% with the metadata, although interestingly the training precision was substantially higher .
+Notably, we see a respectable gain in precision over a pure CF model by including our genre data -- 5.3% without sideloaded metadata, compared to 7.0% with the metadata, although interestingly the training precision was substantially higher, suggesting the sideloading significantly improves model generalization.
 
 Outside the true positives, the recommendation quality seems fairly good.
 Even for a user with only two ratings, we find both true positives (indicated by `**`) in the top 10:
@@ -310,7 +313,7 @@ It's a Very Merry Muppet Christmas Movie (2002)
 ```
 
 while the others are consistently similar children's movies.
-With more ratings, we still see sensical results:
+For a user with more ratings, we still see sensical results:
 
 ```csv
 *Lord of the Rings: The Two Towers, The (2002)*
@@ -331,6 +334,7 @@ The results are either true positives, or pass gut-check (e.g., enjoying all thr
 
 To generate predictions from our model, we don't, in the strictest sense, _need_ to keep the modeling object around (though LightFM provides a `predict` method that will score user-item combinations easily) - in fact, it's often better that we don't!
 The model learns representations of users and movies embedded in a low-dimensional space, in which distance (dot-product, in this case) corresponds to the model's score.
+We can compute scores by simply directly computing the dot-product of the appropriate rows of the user and movie embedding matrices.
 Conveniently, LightFM provides an easy way to extract these embeddings (including any sideloaded metadata):
 
 ```python
@@ -358,7 +362,12 @@ movie_embeddings = numpy.concatenate(
 )
 ```
 
-Where we've gone ahead and stacked in the bias vectors to satisfy the dot-product relationship defined for LightFM's scores.
+Where we've gone ahead and stacked in the bias vectors to satisfy the dot-product relationship defined for LightFM's scores:
+
+$$
+\hat{r}_{ij} = \vec{u}_i \cdot \vec{v}_j + b_i + b_j
+$$
+
 These `(n_users, embedding_dim+2)` and `(n_movies, embedding_dim+2)`-sized matrices include all the information we need to perform inference for known users and movies.
 Actually, from this point forward we've essentially abstracted away the details of the process by which we generated these embeddings - from a model-serving standpoint we only need to know that we have embeddings trained for a given dimension and distance metric.
 
@@ -370,11 +379,11 @@ user_lookup, _, movie_lookup, movie_feature_lookup = dataset.mapping()
 ```
 
 since we'll be accessing the user and movie matrices by ordinal index, we need a lookup table to map those indices to the user and movie IDs in our actual data -- fortunately, we can easily extract this from the `lightfm.data.Dataset` object.
-
-For convenience in the following, suppose we have
+The above mappings are from external mappings (e.g., user and movie IDs) to ordinal indices, so we need to invert them to access users/items based on the ordinal indices from the matrix:
 
 ```python
-Recommendation = tuple[int, float]
+movie_inverse = {v: k for k, v in movie_lookup.items()}
+user_inverse = {v: k for k, v in user_lookup.items()}
 ```
 
 ### The Naive Approach: Sorted Scores
@@ -385,14 +394,17 @@ Taking the score to represent proximity or distance between points in the embedd
 A naive approach to this would be to sort the scores and take the top results, which will return an exact result:
 
 ```python
+Recommendation = tuple[int, float]
+
 def exact_rank_naive(
-    user_index: int, cutoff: int = 10
+    user_id: int, cutoff: int = 10
 ) -> list[Recommendation]:
+    user_index = user_inverse[user_id]
     e = user_embeddings[user_index, :]
     scores = numpy.dot(e, movie_embeddings.T)
 
     ranks = scores.argsort()[:-(cutoff+1):-1]
-    return [(movie_lookup[r], scores[r]) for r in ranks]
+    return [(movie_inverse[r], scores[r]) for r in ranks]
 ```
 
 The trouble is, this will require resorting a full array of $$n$$ movies on every request, requiring $$O(n \log n)$$ time over and above the $$O(n)$$ time required to compute every dot product.
@@ -410,8 +422,9 @@ Rather than sorting the whole array, we'll follow a two-step process:
 
 ```python
 def exact_rank_partition(
-    user_index: int, cutoff: int = 10
+    user_id: int, cutoff: int = 10
 ) -> list[Recommendation]:
+    user_index = user_inverse[user_id]
     e = user_embeddings[user_index, :]
     scores = np.dot(e, movie_embeddings.T)
     top_k = np.argpartition(scores, -cutoff)[-cutoff:]
@@ -419,7 +432,7 @@ def exact_rank_partition(
     ranks = np.argsort(scores[top_k])[::-1]
     scores = scores[top_k][ranks]
     top_k = top_k[ranks]
-    return [(movie_lookup[k], scores[k]) for k in top_k]
+    return [(movie_inverse[k], scores[k]) for k in top_k]
 ```
 
 The partitioning algorithm on average occupies only $$O(n)$$ time, with the subsequent $$O(k \log k)$$ for step (2) being negligible for $$k \ll n$$.
@@ -450,9 +463,10 @@ It is a trivial vector operation to establish which side of the hyperplane each 
   <img src="/images/projects/recommender/annoy-2.svg" />
 </p>
 
-At this point, we've essentially built an extremely simple hashing function: we can map an arbitrary point in a $$d$$-dimensional space to a single bit indicating the sides of the hyperplane.
+At this point, we've essentially built an extremely simple hashing function: we can map an arbitrary point in a $$d$$-dimensional space to a single bit of information indicating the sides of the hyperplane.
 By ordinary hash function standards, this isn't particularly helpful, as we have a huge number of hash collisions.
 However, those collisions have one useful property: the likelihood of collision between two points is dependant on their proximity, which we term [locality-sensitive hashing](https://en.wikipedia.org/wiki/Locality-sensitive_hashing).
+We'll leverage this property to quickly access an immediate neighborhood around a given query point by computing hash functions, rather than pairwise distances.
 
 Next, take the two subspaces defined by our hyperplane, and subdivide them with two further random hyperplanes (in annoy's case, we specifically select planes by splitting evenly between two randomly selected points in the dataset, to avoid particularly pathological splits):
 
@@ -495,15 +509,16 @@ The index provides nearest-neighbor lookup by index (for items already in the in
 
 ```python
 def approximate_rank(
-    user_index: int, cutoff: int = 10
+    user_id: int, cutoff: int = 10
 ) -> list[Recommendation]:
+    user_index = user_inverse[user_id]
     e = user_embeddings[user_index, :]
 
     ids, scores = index.get_nns_by_vector(
         e, cutoff, include_distances=True,
     )
     return [
-        (movie_lookup[k], score)
+        (movie_inverse[k], score)
         for k, score in zip(ids, scores)
     ]
 ```

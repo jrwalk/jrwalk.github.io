@@ -43,7 +43,7 @@ userId,movieId,rating,timestamp
 ...
 ```
 
-In our [example code](https://github.com/jrwalk/recommender-demo), we have bootstrap & migration scripts for representing the movie data at rest in a database, along with some sensical transforms (e.g., snake-casing field names, and parsing movie genres into a postgres JSONB array column) -- for the purposes of this demo, we'll assume we can access data in that form.
+In our [example code](https://github.com/jrwalk/recommender-demo/tree/main/adhocs), we have bootstrap & migration scripts for representing the movie data at rest in a database, along with some sensical transforms (e.g., snake-casing field names, and parsing movie genres into a postgres JSONB array column) -- for the purposes of this demo, we'll assume we can access data in that form.
 
 ## Collaborative Filtering Models
 

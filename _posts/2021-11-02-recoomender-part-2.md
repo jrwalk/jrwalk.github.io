@@ -118,6 +118,83 @@ By removing extraneous build requirements from our final image, we can both achi
 
 ## The Serving API
 
+With our container squared away, we're ready to start building out app.
+Like we've [seen before](/pages/projects/flask-to-fastapi), setting up a FastAPI app is straightforward: we instantiate a `FastAPI` object and bind route functions to it to define the API endpoints.
+We'll start this in `app.py`:
+
+```python
+# app.py
+
+from fastapi import FastAPI
+
+from .schemas import (
+    Healthcheck,
+    RecommendationRequest,
+    RecommendationResponse,
+)
+
+app = FastAPI(
+    title="serving-app",
+    version="0.1.0",
+    description="a simple serving app for a recommender model",
+)
+
+
+@app.get("/health-check", response_model=Healthcheck)
+async def healthcheck() -> Healthcheck:
+    """A simple high-state healthcheck."""
+    return Healthcheck(status="ok")
+
+
+@app.post("/recommend", response_model=RecommendationResponse)
+async def recommend(
+    request_body: RecommendationRequest,
+) -> RecommendationResponse:
+    """Retrieves the requested number of recommendations for a given user.
+
+    If no data can be found for a user, returns an empty set of recommendations.
+    """
+    raise HTTPException(status_code=500, detail="we haven't built this yet!")
+```
+
+Where we've created the app, a "healthcheck" endpoint that just indicates the app is alive, and the skeleton of our recommendation endpoint.
+Defining an API route is simply a matter of defining a function for the endpoint's operation and binding it to the app via the decorator -- for example, the `recommend` function will present itself via an HTTP request like `curl -X POST $API_URL/recommend`.
+
+```python
+# schemas.py
+
+from uuid import UUID
+
+from pydantic import BaseModel, Field
+from pydantic.dataclasses import dataclass
+
+
+# request schemas
+class RecommendationRequest(BaseModel):
+    user_id: int
+    cutoff: int = 10
+
+
+# response schemas
+@dataclass
+class Healthcheck:
+    status: str
+
+
+@dataclass
+class Recommendation:
+    movie_id: int
+    title: str
+    genres: list[str]
+    score: float = Field(..., ge=0, le=1)
+
+
+@dataclass
+class RecommendationResponse:
+    request_id: UUID
+    recommendations: list[Recommendation]
+```
+
 ## Recommender Model Inference
 
 <p align="center">
